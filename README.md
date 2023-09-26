@@ -4,6 +4,6 @@
 
 [template source](https://mmistakes.github.io/minimal-mistakes/)
 
-[MyBlog](https://y40103.gitgub.io)
+[MyBlog](https://y40103.github.io/)
 
 
