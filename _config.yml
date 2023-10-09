@@ -104,9 +104,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "Chung-Chi Huang"
+  name             : " "
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "後端工程師, 擅長Python & Golang"
+  bio              : " "
   location         : "Taipei, Taiwan"
   email            : "y40103@gmail.com"
   links:
@@ -220,7 +220,7 @@ sass:
 permalink: /:categories/:title/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: Asia/Taipei # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 
 # Plugins (previously gems:)
