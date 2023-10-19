@@ -9,7 +9,11 @@ toc: true
 toc_label: Index
 ---
 
-# Django
+Django 基本使用與ORM操作隨筆   
+
+
+
+
 
 ## 初始化設定
 
