@@ -62,7 +62,7 @@ postresql中 user與role 實際上是同一種單位 只差別在有無登錄權
 
 ## 基本操作隨筆 
 
-```SQL
+```
 set search_path to <schema_name>;
 # 切換當前schema
 
@@ -104,11 +104,11 @@ SELECT * FROM information_schema.table_privileges where grantor='test02';
 
 ### 檢索user  
 
-```SQL
+```
 \du
 ```
 
-```SQL
+```
 select * from pg_user;
 ```
 ---
@@ -116,7 +116,7 @@ select * from pg_user;
 ### 檢索role 詳細權限
 
 
-```SQL
+```
 select * from pg_roles
 ```
 
@@ -124,7 +124,7 @@ select * from pg_roles
 ### 創建role
 
 
-```SQL
+```
 create role <role_name>
 <授權選項1>
 <授權選項2>
@@ -176,7 +176,7 @@ alter user test01 createrole;
 
 刪除前 需先刪除相依於此role的對象或權限
 
-```SQL
+```
 drop role if exists <role_name>;
 ## 登陸
 ```
@@ -196,7 +196,7 @@ dropuser -U postgres -h 127.0.0.1 test01
 
 賦予後, 該user就可以擁有該role的權限
 
-```SQL
+```
 grant <role> to <某user>
 ##　將賦予某user <role>權限
 ```
@@ -210,7 +210,7 @@ grant postgrs to test01
 
 該user需執行, 類似linux中 su操作
 
-```SQL
+```
 set role <role>:
 ```
 
@@ -218,7 +218,7 @@ set role <role>:
 ### 撤銷賦予的role
 
 將user test01的 role postgres 拔掉 
-```SQL
+```
 revoke postgres from test01;
 ```
 
@@ -255,12 +255,12 @@ table中的所有row的CRUD,
 
 create 一般內部資源控制都授權可以執行
 
-```SQL
+```
 grant create on database <某db> to <userB>
 ```
 #### Revoke Database Authorization
 
-```SQL
+```
 revoke create on database <某db> from <userB>
 ```
 
@@ -293,7 +293,7 @@ grant <關鍵字> on schema <schema_name> to <user_name>
 
 #### Revoke Schema Authorization
 
-```SQL
+```
 revoke create on schema <某db> from <userB>
 ```
 
@@ -310,7 +310,7 @@ revoke create on schema <某db> from <userB>
 
 需注意schema檢索權限是必須的 否則無法看到table之類的 也等於無法指定 會沒辦法操作內部資源
 
-```SQL
+```
 grant usage on schema <schema_name> to <user_name>
 ## 需給於schema 檢索權限 , 蠻反人類的 即使你有權力操作table內容 但你看不到schema下的東西 一樣不能操作
 
@@ -328,7 +328,7 @@ grant <關鍵字> on <schema_name>.<table_name> to <user_name>
 
 #### Revoke Table Authorization
 
-```SQL
+```
 revoke <關鍵字> on <schema_name>.<table_name> from <user_name>
 ```
 
