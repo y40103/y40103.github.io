@@ -208,7 +208,9 @@ e.g.
 Schema 層級授權 , 表示你可以操作該schema下  
 table 創建或刪除,  
 table中的所有row的CRUD,  
-但不能操作其他schema, 只能在授權的schema中活動 
+但不能操作其他schema, 只能在授權的schema中活動
+
+詳細物件授權可參考 [grant](https://docs.postgresql.tw/reference/sql-commands/grant)
 
 ---
 ### Database 層
