@@ -20,45 +20,13 @@ postgres 權限控制核心是基於RBAC, 利用角色(role)控制權限
 
 創建user後, 就把該role掛在user上 ,   
 
-postresql中 user與role 實際上是同一種單位 只差別在有無登錄權限
+postgres中 user與role 實際上是同一種單位 只差別在有無登錄權限
 
 以下無論創建user或是 role, 都是用role的指令
 
 賦予某role權限的user, 所執行的動作等同該role
 
 ---
-### 範例情況
-
-- 身為一個user, 若被創建時有createdb權限, 由你所創建的db的owner就是你自己
-   對於該db來說, 你就與superuser相同
-
-- 若你這個user 並沒有createdb權限, 假設userB有createdb權限,  你被賦予userB這個role
-   你使用指令創建db, 實際上owner依然是userB, 但因你有userB的role,  身份上 該user=userB
-
-- role被創建的時候, 可以被賦於基本的系統權限, 如 可否登陸, 可否創建role, 可否創建db 等等....
-
-- database內的細部權限控制是屬於 物件層級的權限控制
-   如A 有crestedb的基本系統權限, B只有登陸權限 啥都沒有
-   A創建一個名為 A_DB的資料庫 , 他只想給B操作這個A_DB內的內容
-   就可以用物件層級的授權指令 給B A_DB的 db物件層級 權限,
-   他就可以操作 該db 中 schema, table , row 的操作
-
-- 若有一個C 你想要給他某個schema內的操作權限
-   就可以用物件層級的指令 給C 某個schema的 schema物件層級all權限
-   他就可以對schema內的 table, row 操作
-
-- 今天有一個D 你想要給他跟C相同的權限 , 可以找一個user是有 createrole or superuser 權限, 將role C 直接給 D, 
-
-- 有一個E 你只想給他讀取某table中的row
-   你就可以用物件層級的指令 給C某schema 物件層級的檢索權限 table物件層級的讀權限, 他就只能讀某table的內容
-
-- 然而今天有兩個人 E,F 用物件層級權限給使其可操作 A_DB
-   但實際上兩者控制是無法相互干涉的 E在該DB下創建的資源 owner為E, F創建的為F
-   若非該onwer 是無法控制該單位的  類似線上遊戲概念 大家登陸同一款遊戲, 各玩各的 他人是沒有權力干涉你的帳號的
-
-- 有最上層物件權限不代表有權限可以訪問下層其他人物件, 如G有 G_DB為 onwer 但給 H database物件權限, 他可以在G_DB創建 schema/table/row,  他建了一個 H_schema ,  H又給了I H_schema的權限, I 在 H schema下 創建  I_table,   此時H與G都是無法訪問操作 I_table的 ,  需要 I 給 H I_table權限, H 才能訪問操作 I_table,  而G要操作 I_table 則需要滿足   H給 H_schema權限, I也給 I_table權限
-
-- superuser = 不會觸發鑒權機制 因此可以做任何操作
 
 ## 基本操作隨筆 
 
@@ -100,7 +68,7 @@ SELECT * FROM information_schema.table_privileges where grantor='test02';
 
 ## RBAC
 
-創建/刪除/刪除/檢索 role,  且可定義基本系統權限 
+創建/修改/刪除/檢索 role,  且可定義基本系統權限 
 
 ### 檢索user  
 
@@ -335,3 +303,35 @@ revoke <關鍵字> on <schema_name>.<table_name> from <user_name>
 
 ---
 
+## 範例情況
+
+- 身為一個user, 若被創建時有createdb權限, 由你所創建的db的owner就是你自己  
+   對於該db來說, 你就與superuser相同  
+
+- 若你這個user 並沒有createdb權限, 假設userB有createdb權限,  你被賦予userB這個role  
+   你使用指令創建db, 實際上owner依然是userB, 但因你有userB的role,  身份上 該user=userB  
+
+- role被創建的時候, 可以被賦於基本的系統權限, 如 可否登陸, 可否創建role, 可否創建db 等等....  
+
+- database內的細部權限控制是屬於 物件層級的權限控制  
+   如A 有crestedb的基本系統權限, B只有登陸權限 啥都沒有  
+   A創建一個名為 A_DB的資料庫 , 他只想給B操作這個A_DB內的內容  
+   就可以用物件層級的授權指令 給B A_DB的 db物件層級 權限,  
+   他就可以操作 該db 中 schema, table , row 的操作 
+
+- 若有一個C 你想要給他某個schema內的操作權限  
+   就可以用物件層級的指令 給C 某個schema的 schema物件層級all權限  
+   他就可以對schema內的 table, row 操作  
+
+- 今天有一個D 你想要給他跟C相同的權限 , 可以找一個user是有 createrole or superuser 權限, 將role C 直接給 D,   
+
+- 有一個E 你只想給他讀取某table中的row  
+   你就可以用物件層級的指令 給C某schema 物件層級的檢索權限 table物件層級的讀權限, 他就只能讀某table的內容  
+
+- 然而今天有兩個人 E,F 用物件層級權限給使其可操作 A_DB  
+   但實際上兩者控制是無法相互干涉的 E在該DB下創建的資源 owner為E, F創建的為F  
+   若非該onwer 是無法控制該單位的  類似線上遊戲概念 大家登陸同一款遊戲, 各玩各的 他人是沒有權力干涉你的帳號的  
+
+- 有最上層物件權限不代表有權限可以訪問下層其他人物件, 如G有 G_DB為 onwer 但給 H database物件權限, 他可以在G_DB創建 schema/table/row,  他建了一個 H_schema ,  H又給了I H_schema的權限, I 在 H schema下 創建  I_table,   此時H與G都是無法訪問操作 I_table的 ,  需要 I 給 H I_table權限, H 才能訪問操作 I_table,  而G要操作 I_table 則需要滿足   H給 H_schema權限, I也給 I_table權限  
+
+- superuser = 不會觸發鑒權機制 因此可以做任何操作  
