@@ -3,7 +3,7 @@ title: "Vimium 中文 Cheat Sheet"
 categories:
   - 通用工具
 tags:
-  - vimium
+  - Vimium
 toc: true
 toc_label: Index
 ---

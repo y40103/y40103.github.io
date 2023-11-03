@@ -131,14 +131,13 @@ def page_view(request, page: int):
 
 urls.py
 
-```python\
+```python
 
     urlpatterns = [
         path('admin/', admin.site.urls),
         path("page/<int:page_num>", views.page_view),
         re_path(r"regex_test\/(?P<regex_get>\d\d\d\d_123)", views.regex_page_view),
     ]
-
 
 ```
 
