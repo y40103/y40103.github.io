@@ -12,6 +12,7 @@ Vimium shortcut cheat sheet
 
 
 ### 歷史操作相關
+  
 
 shortcut|content
 :-:|:-:
@@ -20,6 +21,7 @@ L|下一頁
 
 
 ### 分頁操作相關
+  
 
 shortcut|content
 :-:|:-:
@@ -31,6 +33,7 @@ X | 還原關閉頁面
 
 
 ### 頁面瀏覽相關
+  
 
 shortcut|content
 :-:|:-:
@@ -45,6 +48,7 @@ ctrl+b|頁面向上滾動一頁
 
 
 ### 頁面操作相關
+  
 
 shortcut|content
 :-:|:-:
@@ -57,8 +61,8 @@ F| 顯示頁面所有連結, 選擇, 並新增分頁開啟
 yy | 複製當前頁面url
 gf | 循環frame目標 (frame單位 e.g. 當前整個頁面,當前頁面播放器... )
  i | 插入模式 
- 
+ ctrl+j | 下拉選單向下移動
+ ctrl+k | 下拉選單向上移動
 
 其餘可參考 [vimium](https://github.com/philc/vimium/blob/master/README.md)
-
 
