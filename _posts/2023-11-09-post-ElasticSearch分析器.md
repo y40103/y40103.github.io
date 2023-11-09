@@ -1,9 +1,9 @@
 ---
-title: "ElasticSearch 分析器 analyzer"
+title: "ElasticSearch Analyzer"
 categories:
   - ElasticSearch
 tags:
-  - analyzer
+  - Analyzer
 toc: true
 toc_label: Index
 ---

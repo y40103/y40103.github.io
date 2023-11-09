@@ -1,5 +1,5 @@
 ---
-title: "ElasticSearch基礎操作"
+title: "ElasticSearch 基礎操作"
 categories:
   - ElasticSearch
 toc: true
