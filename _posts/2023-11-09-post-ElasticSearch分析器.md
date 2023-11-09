@@ -10,7 +10,7 @@ toc_label: Index
 
 ## 組成
 
-1. character filter: 主要做篩選與過濾 e.g. 羅馬數字轉阿拉伯 , 將HTML字元濾掉  
+1. character filter: 主要做篩選與過濾 e.g. 將HTML字元濾掉  
 2. tokenizer: 主要將字串進行分詞 e.g. "It's a cool guy" >> "it's" "a" "cool" "guy"  
 3. token filter:  可將拆出的分詞進行 增加,刪除,修改 e.g. 大小寫轉換  
 
