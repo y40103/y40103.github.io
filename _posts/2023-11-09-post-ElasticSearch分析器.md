@@ -8,8 +8,6 @@ toc: true
 toc_label: Index
 ---
 
-分析器基本理解與使用
-
 ## 組成
 
 1. character filter: 主要做篩選與過濾 e.g. 羅馬數字轉阿拉伯 , 將HTML字元濾掉  
