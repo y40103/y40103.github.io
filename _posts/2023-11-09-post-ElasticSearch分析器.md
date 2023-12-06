@@ -6,14 +6,14 @@ tags:
   - Analyzer
 toc: true
 toc_label: Index
+mermaid: true
 ---
 
 
 分析器隨筆
 
-<script src="https://unpkg.com/mermaid@8.0.0/dist/mermaid.min.js"></script>
 
-<div class="mermaid">
+```mermaid
 flowchart LR
 A[text] --> F[character filter]
 subgraph Analyzer
@@ -21,8 +21,7 @@ F --> G[tokenizer]
 G --> H[token filter]
 end
 H --> J[Index]
-</div>
-
+```
 
 
 
