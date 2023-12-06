@@ -305,10 +305,7 @@ revoke <關鍵字> on <schema_name>.<table_name> from <user_name>
 
 ---
 
-## 範例情況
-
-- 身為一個user, 若被創建時有createdb權限, 由你所創建的db的owner就是你自己  
-   對於該db來說, 你就與superuser相同  
+## 實際情況
 
 - 若你這個user 並沒有createdb權限, 假設userB有createdb權限,  你被賦予userB這個role  
    你使用指令創建db, 實際上owner依然是userB, 但因你有userB的role,  身份上 該user=userB  
