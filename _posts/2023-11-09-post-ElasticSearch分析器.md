@@ -8,6 +8,21 @@ toc: true
 toc_label: Index
 ---
 
+
+分析器隨筆
+
+
+```mermaid
+flowchart LR
+A[text] --> F[character filter]
+subgraph Analyzer
+F --> G[tokenizer]
+G --> H[token filter]
+end
+H --> J[Index]
+```
+
+
 ## 組成
 
 1. character filter: 主要做篩選與過濾 e.g. 將HTML字元濾掉  
@@ -15,10 +30,11 @@ toc_label: Index
 3. token filter:  可將拆出的分詞進行 增加,刪除,修改 e.g. 大小寫轉換  
 
 
-## 觸發場景
+## 觸發時機
 
-- document的text filed 被寫入elasticsearch時. 會將其分詞並寫入index
-- 查找index時, 也會將搜索關鍵字用分析器拆分去查找
+1. 查詢時
+2. 寫入時
+
 
 
 
