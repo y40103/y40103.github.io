@@ -202,12 +202,12 @@ def req_test(request: HttpRequest):
 
 [測試](http://127.0.0.1:8000/req/1?a=1&b=2)
 
-path info: host後面的路徑
-method: 請求種類
-GET: 為檢視查詢參數 會用字典的形式返回 ## 若查詢參數有複數個相同key 可用 GET.getlist('<key>') 會返回list
-POST: 為檢視Content-Type: application/x-www-form-urlencoded , body的內容
+path info: host後面的路徑  
+method: 請求種類  
+GET: 為檢視查詢參數 會用字典的形式返回 ## 若查詢參數有複數個相同key 可用 GET.getlist('<key>') 會返回list  
+POST: 為檢視Content-Type: application/x-www-form-urlencoded , body的內容  
 
-e.g. username=johndoe&password=secretpassword
+e.g. username=johndoe&password=secretpassword  
 
 ```bash
 
