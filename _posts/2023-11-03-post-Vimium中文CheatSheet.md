@@ -1,7 +1,7 @@
 ---
-title: "Vimium 中文 Cheat Sheet"
+title: "[筆記] Vimium 中文 Cheat Sheet"
 categories:
-  - 通用工具
+  - 筆記
 tags:
   - Vimium
 toc: true

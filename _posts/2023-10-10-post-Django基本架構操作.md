@@ -1,10 +1,10 @@
 ---
-title: "Django 基本架構/操作"
+title: "[筆記] Django 基本架構/操作"
 categories:
-  - Python
+  - 筆記
 tags:
   - Django
-  - ORM
+  - Python
 toc: true
 toc_label: Index
 ---

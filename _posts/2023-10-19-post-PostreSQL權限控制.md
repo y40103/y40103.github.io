@@ -1,10 +1,9 @@
 ---
-title: "PostreSQL 權限控制"
+title: "[筆記] PostreSQL 權限控制"
 categories:
-  - PostgreSQL
+  - 筆記
 tags:
-  - Authorization
-  - RBAC
+  - Postgres
 toc: true
 toc_label: Index
 ---

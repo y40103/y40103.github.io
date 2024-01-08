@@ -1,9 +1,9 @@
 ---
-title: "ElasticSearch Analyzer"
+title: "[筆記] ElasticSearch Analyzer"
 categories:
-  - ElasticSearch
+  - 筆記
 tags:
-  - Analyzer
+  - elasticsearch
 toc: true
 toc_label: Index
 mermaid: true
@@ -186,7 +186,10 @@ PUT test_index
 
 ```
 
-其他內建標準 [tokenizer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html) , [token_filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html)[character filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-charfilters.html)
+其他內建標準  
+[tokenizer](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenizers.html)   
+[token_filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html)  
+[character filter](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-charfilters.html)  
 
 
 測試自訂分析器

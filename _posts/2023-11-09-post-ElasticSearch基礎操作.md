@@ -1,7 +1,9 @@
 ---
-title: "ElasticSearch 基礎操作"
+title: "[筆記] ElasticSearch 基礎操作"
 categories:
-  - ElasticSearch
+  - 筆記
+tags:
+  - elasticsearch
 toc: true
 toc_label: Index
 ---
