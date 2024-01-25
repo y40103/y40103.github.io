@@ -130,13 +130,13 @@ networks:
 ```
 
 
-1. register
+### register
 
 ```bash
 gitlab-runner register  --url http://172.24.141.200  --token glrt-i_Hioib-mPsxZRTmd6U4
 ```
 
-2. delete
+### delete
 
 需先從gitlab UI刪除, 再執行以下指令
 
