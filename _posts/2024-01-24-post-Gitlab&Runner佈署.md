@@ -14,7 +14,7 @@ toc_label: Index
 這邊須注意 external_url需與docker network 分配的相同, 設定上直接採用靜態IP
 或是直接使用宿主機IP,
 
-```docker-compose.yaml
+```yaml
 version: '3.6'
 services:
   web:
