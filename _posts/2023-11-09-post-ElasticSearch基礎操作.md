@@ -3,7 +3,7 @@ title: "[筆記] ElasticSearch 基礎操作"
 categories:
   - 筆記
 tags:
-  - elasticsearch
+  - Elasticsearch
 toc: true
 toc_label: Index
 ---

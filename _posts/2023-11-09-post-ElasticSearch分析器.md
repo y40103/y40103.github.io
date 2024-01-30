@@ -3,7 +3,7 @@ title: "[筆記] ElasticSearch Analyzer"
 categories:
   - 筆記
 tags:
-  - elasticsearch
+  - Elasticsearch
 toc: true
 toc_label: Index
 mermaid: true

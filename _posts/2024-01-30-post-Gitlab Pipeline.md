@@ -9,6 +9,7 @@ toc_label: Index
 mermaid: True
 ---
 
+## Pipeline
 
 利用yaml定義CICD流程 , 通常包含一個stage與多個job組成,  
 若job中與全局設定有重復, 則以job為主  
