@@ -1,5 +1,5 @@
 ---
-title: "[筆記] Gitalb & Runner 佈署"
+title: "[筆記] Gitlab & Runner 佈署"
 categories:
   - 筆記
 tags:

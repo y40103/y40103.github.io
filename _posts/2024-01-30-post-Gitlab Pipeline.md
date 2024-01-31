@@ -1,5 +1,5 @@
 ---
-title: "[筆記] Gitalab Pipeline" 
+title: "[筆記] Gitlab Pipeline" 
 categories:
   - 筆記
 tags:
