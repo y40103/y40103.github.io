@@ -9,8 +9,7 @@ toc: true
 toc_label: Index
 ---
 
-
-相較以前用的logging更傻瓜, 大部分已經都有預設格式, 也可以依照自己需求設計  
+相較logging更傻瓜, 大部分已經都有預設格式, 也可以依照自己需求設計  
 功能包含 日誌分級, rotate, 格式化輸出 等等...   
 
 
@@ -18,31 +17,47 @@ toc_label: Index
 > loguru 加入handler,若沒有特別設定filter, 會將已存在的handler也作為當次add的instance  
 > 如本來就有A handler, 我又add B handler, 會變成 加入2次 B handler, 但A handler依然存在 不會被直接覆蓋  
 
-## 方法
 
-### remove  
+## remove  
 可以刪除之前的所有設定, 也包含本來就存在的handler 
  
 ```python
 from loguru import logger
 logger.remove()
+import sys
+from loguru import logger
+
+logger.remove()
+format = "<green>{time}</green> | <level>{level}</level>     | <blue>{name}:{function}:{extra[ip]}:{extra[request_id]}:{extra[user]}:{line}</blue> - <level>{message}</level>"
+
+logger.add(sys.stdout, level="INFO", format=format) # 增加第一個handler to stdout
 ```
 這樣可以避免重複輸出, 但只能設定一組handler  
 
+## handler
 
-### filter
+主要是處理輸出, 可以對輸出進行格式化, 分級, 重新向, rotate  
+
+```python
+import sys
+
+from loguru import logger
+
+logger.remove()
+format = "<green>{time}</green> | <level>{level}</level>     | <blue>{name}:{function}:{extra[ip]}:{extra[request_id]}:{extra[user]}:{line}</blue> - <level>{message}</level>"
+
+logger.add(sys.stdout, level="INFO", format=format) # 增加第一個handler to stdout
+```
+
+定向至stdout, 且為INFO以上的log, 使用特定格式輸出  
+
+
+## filter
 給add的handler賦予驅動條件  
 訊息傳入logger後,  
 在底下handler之中有被設定filter的情況下, 只會將訊息放去有filter的handler, 且符合filter條件的handler才會被輸出,  
-若無filter的handler會被忽略
-filter設定是一個callable function 參數傳入dict 
-- function
-傳入一個dict, 並存在各種key, 對應該次log的所有屬性,  
-例如: level, message, name, function, line, time, exception, extra, record_id, thread, process, elapsed, file, path, module, and so on.  
-```
-{'elapsed': datetime.timedelta(microseconds=15719), 'exception': None, 'extra': {'ip': '123.123.123.111', 'request_id': '18', 'user': 'someone_else'}, 'file': (name='test.py', path='/home/hccuse/dev/ETC/log_test/fastapi-sam-base-dev-template/test.py'), 'function': 'testact', 'level': (name='SUCCESS', no=25, icon='✅'), 'line': 38, 'message': 'set action successfully', 'module': 'test', 'name': '__main__', 'process': (id=112553, name='MainProcess'), 'thread': (id=140287233048576, name='MainThread'), 'time': datetime(2024, 1, 3, 14, 3, 23, 545979, tzinfo=datetime.timezone(datetime.timedelta(seconds=28800), 'CST'))}
-```
-
+若無filter的handler會被忽略  
+常用於分級輸出  
 
 
 ### 踩過坑
@@ -87,12 +102,16 @@ testact()
 2024-01-03T10:35:32.140800+0800 | ERROR     | __main__:testact:123.123.123.111:18:someone_else:30 - ####
 ```
 
+### filter function
+filter設定是一個callable function 參數傳入dict  
+傳入一個dict, 並存在各種key, 對應該次log的所有屬性,    
+例如: level, message, name, function, line, time, exception, extra, record_id, thread, process, elapsed, file, path, module, and so on.  
+```
+{'elapsed': datetime.timedelta(microseconds=15719), 'exception': None, 'extra': {'ip': '123.123.123.111', 'request_id': '18', 'user': 'someone_else'}, 'file': (name='test.py', path='/home/hccuse/dev/ETC/log_test/fastapi-sam-base-dev-template/test.py'), 'function': 'testact', 'level': (name='SUCCESS', no=25, icon='✅'), 'line': 38, 'message': 'set action successfully', 'module': 'test', 'name': '__main__', 'process': (id=112553, name='MainProcess'), 'thread': (id=140287233048576, name='MainThread'), 'time': datetime(2024, 1, 3, 14, 3, 23, 545979, tzinfo=datetime.timezone(datetime.timedelta(seconds=28800), 'CST'))}
+```
 
-## 分級輸出
 
-在loguru中, 分級輸出, 添加handler, 需設定filter, 避免重複加入handler instance  
-
-
+filter 分級輸出範例  
 ```python
 
 from loguru import logger
@@ -151,7 +170,7 @@ enter filter_func all handler will trigger ERROR
 ```
 
 
-## 實際範例
+## 實際應用範例
 
 ### API log  
 ```python
@@ -193,4 +212,5 @@ def get_logger(request: Request = None) -> logger:
 
     return clogger.bind(user="NO AUTH")
 ```
+
 
