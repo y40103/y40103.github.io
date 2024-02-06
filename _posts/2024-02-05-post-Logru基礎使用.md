@@ -10,7 +10,7 @@ toc_label: Index
 ---
 
 
-近期發現好用的log框架,相較以前用的logging更傻瓜, 大部分已經都有預設格式, 也可以依照自己需求設計  
+相較以前用的logging更傻瓜, 大部分已經都有預設格式, 也可以依照自己需求設計  
 功能包含 日誌分級, rotate, 格式化輸出 等等...   
 
 
@@ -45,7 +45,7 @@ filter設定是一個callable function 參數傳入dict
 
 
 
-## 踩過坑
+### 踩過坑
 
 分級增加handler, 卻沒有filter
 
@@ -151,7 +151,7 @@ enter filter_func all handler will trigger ERROR
 ```
 
 
-## 範例
+## 實際範例
 
 ### API log  
 ```python
