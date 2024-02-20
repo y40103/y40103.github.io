@@ -9,7 +9,6 @@ toc_label: Index
 mermaid: true
 ---
 
-# Prometheus
 
 基本組件
 
@@ -715,11 +714,11 @@ irate(probe_duration_seconds[1m])
 
 ### 趨勢函數
 
-#### predict_linear()  
+#### predict_linear()
 
 範例對象說明, 利用磁碟可用空間為例
 
-```promQL
+```
 node_filesystem_avail_bytes
 
 node_filesystem_avail_bytes{device="/dev/nvme0n1p1", fstype="vfat", instance="test-node-linux", job="node1", mountpoint="/boot/efi"}
