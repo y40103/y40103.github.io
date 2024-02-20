@@ -9,7 +9,6 @@ toc_label: Index
 mermaid: true
 ---
 
-# Prometheus
 
 基本組件
 
