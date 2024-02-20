@@ -9,6 +9,7 @@ toc_label: Index
 mermaid: true
 ---
 
+# Prometheus
 
 基本組件
 
@@ -24,7 +25,7 @@ mermaid: true
 | `timestamp` | 時間戳                                 |
 | `value`     | 數值                                  |
 
-```promeql
+```
 process_open_fds{instance="localhost:9100", job="node"} @121313123 100
 ## metrics  @timestamp  value  
 ## process_open_fds  121313123  100  對應
@@ -63,7 +64,7 @@ __name__="process_open_fds", instance="localhost:9100", job="node"  @121313123 1
 | `pg_database_size_bytes`                     | 資料庫大小             |
 | `pg_up`                                      | PostgreSQL 正常啟動數量 |
 
-```promeql
+```
 ((sum(pg_settings_max_connections) by (server) - sum(pg_settings_superuser_reserved_connections) by (server)) - sum(pg_stat_activity_count) by (server)) / sum(pg_settings_max_connections) by (server)) * 100 < 10
 
 # 可用連接數少於10% alert
@@ -77,7 +78,7 @@ __name__="process_open_fds", instance="localhost:9100", job="node"  @121313123 1
 
 #### CPU
 
-```promql
+``` 
 
 node_cpu_seconds_total
 # CPU使用時間
@@ -95,7 +96,7 @@ node_load5
 
 #### Memory
 
-```promql
+``` 
 node_memory_MemTotal_bytes
 # 總記憶體大小 單位: byte, /1024/1024 = MB 
 
@@ -109,7 +110,7 @@ node_memory_MemFree_bytes
 
 #### Filesystem
 
-```promql
+``` 
 node_filesystem_avail_bytes
 # 磁碟可用空間大小 單位: byte, /1024/1024 = MB 
 
@@ -184,25 +185,25 @@ node_memory_Active_bytes{instance="test-node-linux", job="node1"}
 
 目前無用
 
-## 常用標籤
+### 常用標籤
 
 | 標籤名稱       | 描述     |
 |------------|--------|
 | `instance` | 節點名稱   |
 | `job`      | 節點工作名稱 |
 
-## Instant Vector Filter
+### Instant Vector Filter
 
-```promql
+``` 
 node_cpu_seconds_total
 # CPU使用時間
 ```
 
-### {} 條件過濾
+#### {} 條件過濾
 
 可利用{}進行條件過濾
 
-```promql
+``` 
 node_cpu_seconds_total{cpu="0"}
 # 只顯示特定 CPU 核心資料
 
@@ -231,11 +232,11 @@ Mode 為 `node_cpu_seconds_total` 的 arguments
 | `softirq` | CPU 軟體中斷時間                  |
 | `system`  | CPU 運行系統 kernel 程式代碼時間      |
 
-### [] 區間過濾
+#### [] 區間過濾
 
 可利用[]進行區間過濾
 
-```promql
+``` 
 node_cpu_seconds_total[5m]
 # 5 分鐘內的資料
 ```
@@ -249,9 +250,9 @@ node_cpu_seconds_total[5m]
 | `w`  | 週  |
 | `y`  | 年  |
 
-### offset 時間位移
+#### offset 時間位移
 
-```promql
+``` 
 node_cpu_seconds_total{cpu="0"} offset 5m
 # 5 分鐘前的instant vector
 
@@ -259,7 +260,7 @@ node_cpu_seconds_total{cpu="0"}[5m] offset 3d
 # 當前時間 3天前時間點 五分鐘內的 range vector
 ```
 
-## binary operation 二元運算
+### binary operation 二元運算
 
 可用於計算
 
@@ -276,7 +277,7 @@ node_cpu_seconds_total{cpu="0"}[5m] offset 3d
 | `%` | 取餘數 |
 | `^` | 次方  |
 
-```promql
+``` 
 
 e.g. 
 
@@ -291,7 +292,7 @@ node_memory_MemTotal_bytes/(1024/1024)
 
 ```
 
-## 關係運算
+### 關係運算
 
 需注意 若在比較時帶上bool 輸出只會有 1 或 0  
 表示 true 或 false
@@ -315,7 +316,7 @@ node_load 某時間點 是 3
 
 需要用bool 結果只會輸出 0 或 1
 
-```promql
+``` 
 2 > bool 1  # true
 ```
 
@@ -324,7 +325,7 @@ node_load 某時間點 是 3
 不使用bool 若結果不符合條件 則不會顯示該筆資料 若符合條件 則顯示該筆資料  
 使用bool 若結果為 0 則不會顯示該筆資料 若是1 則顯示該筆資料
 
-```promql
+``` 
 e.g. 
 
 up != 0
@@ -338,7 +339,7 @@ up == 1
 up != 1
 ```
 
-## 集合運算
+### 集合運算
 
 | 運算符      | 描述 |
 |----------|----|
@@ -346,7 +347,7 @@ up != 1
 | `or`     | 或者 |
 | `unless` | 排除 |
 
-```promql
+``` 
 
 node_cpu_seconds_total{mode=~"idle|user|system"} and node_cpu_seconds_total{mode=~"system",cpu="0"}
 # and 同時符合兩個條件
@@ -363,7 +364,7 @@ probe_http_status_code <= bool 199 or probe_http_status_code >= bool 400
 
 ```
 
-## 一般聚合函數
+### 一般聚合函數
 
 | 運算符          | 說明                                |
 |--------------|-----------------------------------|
@@ -384,7 +385,7 @@ probe_http_status_code <= bool 199 or probe_http_status_code >= bool 400
 
 只排除或保留特定標籤達到特定效果 類似group
 
-```promql
+``` 
 node_cpu_seconds_total
 # 預設會有標籤: cpu, mode, instance, job
 
@@ -401,7 +402,7 @@ sum(node_cpu_seconds_total) by (instance)
 
 max,avg
 
-```promql
+``` 
 
 max(node_cpu_seconds_total) by (mode)
 # 各cpu core 各mode 最大值  e.g. cpu0-15 的 idle 中的最大值
@@ -422,7 +423,7 @@ avg by(instance) ( rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100
 
 count,topk,bottomk
 
-```promql
+``` 
 
 count(prometheus_http_requests_total)
 # prometheus localhost 被請求的數量
@@ -435,7 +436,7 @@ topk(5, sum(node_cpu_seconds_total) by (mode))
 
 ```
 
-## 時間聚合函數
+### 時間聚合函數
 
 會將區間內的資料進行聚合運算
 
@@ -450,7 +451,7 @@ topk(5, sum(node_cpu_seconds_total) by (mode))
  stddev_over_time(range vector)           | 計算區間內的標準差   
  stdvar_over_time(range vector)           | 計算區間內的標準變異數 
 
-```promql
+``` 
 max_over_time(pg_stat_activity_max_tx_duration[5m])
 # 5分鐘內pg 最大的事務執行時間
 
@@ -462,20 +463,20 @@ min_over_time(node_timex_sync_status[1m])
 
 ```
 
-## 向量批配
+### 向量批配
 
 用於兩個瞬時向量運算
 
-### one to one
+#### one to one
 
-```promql
+``` 
 vector <operator> vector
 ```
 
 該指標的label必須完全相同, 才能進行計算  
 如前後都包含 instance,job, 若前有instance,job,後只有instance,則無法計算
 
-```promql
+``` 
 process_open_fds
 # 各節點各程序的當前描述符數
 
@@ -502,7 +503,7 @@ process_open_fds{instance="test-node-linux",job="node1"} / process_max_fds{insta
 on 用於指定標籤   
 因向量運算需要相同標籤 若前後只有部份相同, 可用on 指定標籤
 
-```promql
+``` 
 sum by (instance,job)(rate(node_cpu_seconds_total{mode="idle"}[5m]))
 ## 顯示各節點各job 5分鐘內的CPU idle 總和
 ## 會有instance,job 標籤
@@ -524,7 +525,7 @@ sum by (instance,job)(rate(node_cpu_seconds_total{mode="idle"}[5m])) / on (insta
 
 ignoring 用途同上 只是用於忽略標籤
 
-```promeql
+```
 
 sum by (instance,job)(rate(node_cpu_seconds_total{mode="idle"}[5m])) / ignoring (job) sum by (instance)(rate(node_cpu_seconds_total[5m]))
 # 上方式 標注於 (instance,job)的instance
@@ -532,9 +533,9 @@ sum by (instance,job)(rate(node_cpu_seconds_total{mode="idle"}[5m])) / ignoring 
 
 ```
 
-### one to many / many to one
+#### one to many / many to one
 
-```promql
+``` 
 vectors <operator> vectors
 ```
 
@@ -568,7 +569,7 @@ sum without (cpu) (rate(node_cpu_seconds_total[5m])) / ignoring (mode) group_lef
 
 左測
 
-```promql
+``` 
 sum without (cpu) (rate(node_cpu_seconds_total[5m]))
 ```
 
@@ -587,7 +588,7 @@ sum without (cpu) (rate(node_cpu_seconds_total[5m]))
 
 右側
 
-```promql
+``` 
  sum without (mode,cpu) (rate(node_cpu_seconds_total[5m]))  
 ```
 
@@ -599,7 +600,7 @@ sum without (cpu) (rate(node_cpu_seconds_total[5m]))
 
 連接
 
-```promql
+``` 
 ignoring (mode) group_left
 ```
 
@@ -607,52 +608,52 @@ group_left 會以左側標籤輸出
 ignoring 因為需相同標籤才能做計算 , 忽略 mode 標籤
 數值上就是直接左側 / 右側
 
-## 數學函數
+### 數學函數
 
-### abs() 絕對值
+#### abs() 絕對值
 
-```promql
+``` 
 abs(process_open_fds-100)
 ```
 
-### sqrt() 平方根
+#### sqrt() 平方根
 
-```promql
+``` 
 sqrt(process_open_fds)
 ```
 
-### round() 四捨五入
+#### round() 四捨五入
 
-```promql
+``` 
 round(sqrt(process_open_fds))
 ```
 
-## 時間函數
+### 時間函數
 
-### time() 當前時間, 單位 timestamp
+#### time() 當前時間, 單位 timestamp
 
-```promql
+``` 
 time()
 ```
 
 程式啟動多久 單位: 小時
 
-```promql
+``` 
 (time() - process_start_time_seconds ) / (3600)
 ```
 
-## 瞬時函數
+### 瞬時函數
 
-### rate()
+#### rate()
 
 區間常用函數 rate , 常用於gauge
 rate 會計算區間內的每秒平均變化量 簡單說為 (最終值-初始值) / 區間秒數
 
-```promql
+``` 
 rate(metric_name[rate_interval])
 ```
 
-```promql
+``` 
 probe_duration_seconds[1m]
 # 1分鐘內的資料 預設為 15s 一筆, 因此會回傳四筆資料
 
@@ -670,7 +671,7 @@ e.g. 左側數值 右側時間搓 , 可發現時間搓第一與最後差 75-30=4
 
 ```
 
-### increase()
+#### increase()
 
 區間函數increase , 常用於counter   
 increase 會計算區間內的增長量, 簡單說就是 (最終值-初始值)   
@@ -678,11 +679,11 @@ increase 會計算區間內的增長量, 簡單說就是 (最終值-初始值)
 就意義上 increase() / 時間長度 = rate()
 需注意 因輸出為平均結果, 無法看出瞬間數值
 
-```promql
+``` 
 increase(metric_name[increase_interval])
 ```
 
-```promql
+``` 
 increase(node_cpu_seconds_total{mode="idle"}[1m])
 # 1分鐘內的數值變化量 最終值-初始值
 
@@ -692,11 +693,11 @@ rate(node_cpu_seconds_total{cpu="0",mode="idle"}[1m])
 
 ```
 
-### irate()
+#### irate()
 
 與rate()類似, 但會用踩集時間內倒數最後兩筆資料計算, 相較rate()更靈敏, 可凸顯出極值
 
-```promql
+``` 
 probe_duration_seconds[1m]
 0.001598031 @1703699907.838
 0.002492671 @1703699922.838
@@ -712,9 +713,9 @@ irate(probe_duration_seconds[1m])
 
 ```
 
-## 趨勢函數
+### 趨勢函數
 
-### node_filesystem_avail_bytes
+#### predict_linear()  
 
 範例對象說明, 利用磁碟可用空間為例
 
@@ -758,14 +759,14 @@ tmpfs           5.0M  4.0K  5.0M   1% /run/lock
 tmpfs           1.6G  112K  1.6G   1% /run/user/1001
 ```
 
-```promeql
+```
 predict_linear(node_filesystem_avail_bytes{fstype!="tmpfs"}[1h], 24*3600)
 ## 利用前一小時的增長率, 預測往後24hr 的增長
 ```
 
 alert 應用
 
-```promsql
+``` 
 
 ((node_filesystem_avail_bytes * 100 ) / node_filesystem_size_bytes) < 10 and ON (instance,device, mountpoint) predict_linear(node_filesystem_avail_bytes[1h], 24*3600) < 0 and ON (instance,device, mountpoint) node_filesystem_readonly == 0
 # 需符合以下條件
@@ -776,15 +777,15 @@ alert 應用
 
 ```
 
-## 標籤操作函數
+### 標籤操作函數
 
-### label_replace()
+#### label_replace()
 
 主要用途是用當前特定標籤數值 新增一個新標籤
 
 使用範例, 使用 up==1
 
-```promql
+``` 
 up == 1
 ## 原輸出
 
@@ -799,7 +800,7 @@ up{instance="test-node-linux", job="node1"}
 
 ```
 
-```promql
+``` 
 
 label_replace(up==1, "host", "$1", "instance", "(.*):.*")
 # up==1 會輸出 1 或 0 , 1表示true, 0表示false
@@ -817,9 +818,9 @@ up{instance="test-node-linux", job="node1"}
 
 ```
 
-## 多變數標籤操作
+### 多變數標籤操作
 
-```promql
+``` 
 label_replace(up==1, "host", "$1 -- $2", "instance", "(.*):(.*)")
 ## $1 $2 表示regex 的 第一組 第二組 回傳值
 
@@ -832,13 +833,13 @@ up{host="localhost -- 9090", instance="localhost:9090", job="prometheus"}
 up{instance="test-node-linux", job="node1"}
 ```
 
-### label_join()
+#### label_join()
 
 顛單說就是連接當前存在的標籤, 再一個新標籤輸出
 
 若但若用不存在的標籤 則不作用
 
-```promql
+``` 
 label_join(up==1, "new_join_label", "-", "instance", "job")
 
 
@@ -856,35 +857,35 @@ up{instance="test-node-linux", job="node1", new_join_label="test-node-linux-node
 [prometheus document](https://prometheus.io/docs/prometheus/latest/querying/functions/)  
 [prometheus 中文文檔](https://prometheus.fuckcloudnative.io/di-san-zhang-prometheus/di-4-jie-cha-xun/functions)
 
-## 補充說明
+### 補充說明
 
-```promsql
+``` 
 ((node_filesystem_avail_bytes * 100 ) / node_filesystem_size_bytes)
 ## 磁碟可用空間率 (%)
 ```
 
-```promsql
+``` 
 ON (instance,device, mountpoint)
 # 指定對應標籤的資料才運算
 ```
 
-```promsql
+``` 
 predict_linear(node_filesystem_avail_bytes[1h], 24*3600)
 ## 利用前一小時的增長率, 預測往後24hr 的增長
 ## 輸出單位為byte timestamp, 表示當前時間點可使用空間  , 會有多筆資料
 ```
 
-```promsql
+``` 
                                                                    
 predict_linear(node_filesystem_avail_bytes[1h], 24*3600)
 ```
 
-```promsql
+``` 
 node_filesystem_readonly
 # 表示該磁碟是否為唯讀 , 0 = false, 1 = true
 ```
 
-```promql
+``` 
 deriv(node_memory_MemAvailable_bytes[5m])
 # deriv()
 # 只能gauge類型, 返回一個瞬時向量, 使用簡單線性回歸計算區 單位時間內的變化量
