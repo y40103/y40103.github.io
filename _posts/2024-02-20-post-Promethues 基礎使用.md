@@ -10,6 +10,7 @@ mermaid: true
 ---
 
 
+
 基本組件
 
 - Prometheus: 監控核心
@@ -42,11 +43,12 @@ __name__="process_open_fds", instance="localhost:9100", job="node"  @121313123 1
 
 #### metric 數值類型
 
-| 監控指標類型      | 描述              | 例子                          |
-|-------------|-----------------|-----------------------------|
-| `counter`   | 累加計數器，只能增加，不能減少 | `http_request_total`        |
-| `gauge`     | 可增可減            | `node_memory_MemFree_bytes` |
-| `histogram` | 統計數據分佈          | API response time 分佈        |
+| 監控指標類型      | 描述                            | 例子                          |
+|-------------|-------------------------------|-----------------------------|
+| `counter`   | 累加計數器，只能增加，不能減少               | `http_request_total`        |
+| `gauge`     | 可增可減                          | `node_memory_MemFree_bytes` |
+| `histogram` | 統計數據分佈, 實際數值bucket,數值累計,數量類計  | API response time 分佈        |
+| `summary`   | 統計數據分佈, 類似histogram, 但是為百分比累計 | API response time 分佈        |
 
 ## 常見exporter
 
@@ -889,4 +891,3 @@ deriv(node_memory_MemAvailable_bytes[5m])
 # deriv()
 # 只能gauge類型, 返回一個瞬時向量, 使用簡單線性回歸計算區 單位時間內的變化量
 ```
-
