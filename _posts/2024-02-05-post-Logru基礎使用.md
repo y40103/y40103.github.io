@@ -7,18 +7,18 @@ tags:
   - Logru
 toc: true
 toc_label: Index
+mermaid: true
 ---
 
-相較logging更傻瓜, 大部分已經都有預設格式, 也可以依照自己需求設計  
+
+大部分已經都有預設格式, 也可以依照自己需求設計  
 功能包含 日誌分級, rotate, 格式化輸出 等等...   
 
 
 > 需注意 Loguru的logger是 pass by reference,   
-> loguru 加入handler,若沒有特別設定filter, 會將已存在的handler也作為當次add的instance  
-> 如本來就有A handler, 我又add B handler, 會變成 加入2次 B handler, 但A handler依然存在 不會被直接覆蓋  
 
 
-## remove  
+## remove handler
 可以刪除之前的所有設定, 也包含本來就存在的handler 
  
 ```python
@@ -34,7 +34,7 @@ logger.add(sys.stdout, level="INFO", format=format) # 增加第一個handler to 
 ```
 這樣可以避免重複輸出, 但只能設定一組handler  
 
-## handler
+## add handler
 
 主要是處理輸出, 可以對輸出進行格式化, 分級, 重新向, rotate  
 
@@ -52,15 +52,52 @@ logger.add(sys.stdout, level="INFO", format=format) # 增加第一個handler to 
 定向至stdout, 且為INFO以上的log, 使用特定格式輸出  
 
 
-## filter
-給add的handler賦予驅動條件  
-訊息傳入logger後,  
-在底下handler之中有被設定filter的情況下, 只會將訊息放去有filter的handler, 且符合filter條件的handler才會被輸出,  
-若無filter的handler會被忽略  
-常用於分級輸出  
+### filter function
+filter設定是一個callable function 參數傳入dict  
+傳入一個dict, 並存在各種key, 對應該次log的所有屬性,    
+例如: level, message, name, function, line, time, exception, extra, record_id, thread, process, elapsed, file, path, module, and so on.  
+
+```
+{'elapsed': datetime.timedelta(microseconds=15719), 'exception': None, 'extra': {'ip': '123.123.123.111', 'request_id': '18', 'user': 'someone_else'}, 'file': (name='test.py', path='/home/hccuse/dev/ETC/log_test/fastapi-sam-base-dev-template/test.py'), 'function': 'testact', 'level': (name='SUCCESS', no=25, icon='✅'), 'line': 38, 'message': 'set action successfully', 'module': 'test', 'name': '__main__', 'process': (id=112553, name='MainProcess'), 'thread': (id=140287233048576, name='MainThread'), 'time': datetime(2024, 1, 3, 14, 3, 23, 545979, tzinfo=datetime.timezone(datetime.timedelta(seconds=28800), 'CST'))}
+```
+
+```python
+import sys
+from typing import Dict, Any
+from loguru import logger
+
+def filter_func(record: Dict[str, Any]):
+    print("enter filter_func","all handler will trigger",record["level"].name)
+    if record["level"].name == "SUCCESS":
+        print("this is success handler")
+        return True
+    return False
+logger.remove()
+format = "<green>{time}</green> | <level>{level}</level>     | <blue>{name}:{function}:{extra[ip]}:{extra[request_id]}:{extra[user]}:{line}</blue> - <level>{message}</level>"
+
+logger.add(sys.stdout, level="INFO", format=format, filter=lambda x: "INFO" in x["level"].name)
+logger.add(sys.stdout, level="SUCCESS", format=format,
+           filter=filter_func)
+```
 
 
-### 踩過坑
+### 參考流程圖
+
+```mermaid
+graph LR
+    A[logger message] --> C1{Level enough?} -->|yes| B1[handler with filter A] --> D1{filter function true?} -->|yes| E1[output]
+    D1 -->|no| F1[discard]
+    C1 -->|yes| B2[handler with filter B] --> D2{filter function true?} -->|yes| E2[output]
+    D2 -->|no| F2[discard]
+    C1 -->|yes| B3[handler with filter N...] --> D3{filter function true?} -->|yes| E3[output]
+    D3 -->|no| F3[discard]
+    C1 -->|Yes| B4[handler with no filter P] --> E4[output]
+    C1 -->|Yes| B5[handler with no filter Q] --> E5[output]
+```
+
+
+
+### 範例一
 
 分級增加handler, 卻沒有filter
 
@@ -102,24 +139,11 @@ testact()
 2024-01-03T10:35:32.140800+0800 | ERROR     | __main__:testact:123.123.123.111:18:someone_else:30 - ####
 ```
 
-### filter function
-filter設定是一個callable function 參數傳入dict  
-傳入一個dict, 並存在各種key, 對應該次log的所有屬性,    
-例如: level, message, name, function, line, time, exception, extra, record_id, thread, process, elapsed, file, path, module, and so on.  
-```
-{'elapsed': datetime.timedelta(microseconds=15719), 'exception': None, 'extra': {'ip': '123.123.123.111', 'request_id': '18', 'user': 'someone_else'}, 'file': (name='test.py', path='/home/hccuse/dev/ETC/log_test/fastapi-sam-base-dev-template/test.py'), 'function': 'testact', 'level': (name='SUCCESS', no=25, icon='✅'), 'line': 38, 'message': 'set action successfully', 'module': 'test', 'name': '__main__', 'process': (id=112553, name='MainProcess'), 'thread': (id=140287233048576, name='MainThread'), 'time': datetime(2024, 1, 3, 14, 3, 23, 545979, tzinfo=datetime.timezone(datetime.timedelta(seconds=28800), 'CST'))}
-```
 
 
-filter 分級輸出範例  
+### 範例二
+
 ```python
-
-from loguru import logger
-
-logger.remove()
-format = "<green>{time}</green> | <level>{level}</level>     | <blue>{name}:{function}:{extra[ip]}:{extra[request_id]}:{extra[user]}:{line}</blue> - <level>{message}</level>"
-
-## logger always pass by reference, even pass as parameter into function
 import sys
 from typing import Dict, Any
 
@@ -212,5 +236,3 @@ def get_logger(request: Request = None) -> logger:
 
     return clogger.bind(user="NO AUTH")
 ```
-
-
