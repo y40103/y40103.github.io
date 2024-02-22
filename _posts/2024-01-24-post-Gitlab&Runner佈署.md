@@ -142,7 +142,7 @@ gitlab-runner register  --url http://172.24.141.200  --token glrt-i_Hioib-mPsxZR
 
 先從gitlab UI刪除, 再執行以下指令
 
-``bash
+```bash
 gitlab-runner verify --delete 
 ```
 
