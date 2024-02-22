@@ -4,8 +4,6 @@ categories:
   - 筆記
 tags:
   - Prometheus
-  - Exporter
-  - Golang
 toc: true
 toc_label: Index
 mermaid: true
