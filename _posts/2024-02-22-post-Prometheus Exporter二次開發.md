@@ -4,7 +4,6 @@ categories:
   - 筆記
 tags:
   - Prometheus
-  - Exporter
   - Golang
 toc: true
 toc_label: Index
@@ -109,6 +108,7 @@ func (self *MyCollector) Collect(ch chan<- prometheus.Metric) {
 ### 完整範例
 
 將上面collect結合main的範例, 就可以啟動一個Exporter, 並且將監控資料暴露出去  
+
 ```go
 package main
 

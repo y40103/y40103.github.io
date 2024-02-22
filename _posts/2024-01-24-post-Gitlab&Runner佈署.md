@@ -146,4 +146,3 @@ gitlab-runner register  --url http://172.24.141.200  --token glrt-i_Hioib-mPsxZR
 gitlab-runner verify --delete 
 ```
 
-<br/>
