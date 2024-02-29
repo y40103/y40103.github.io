@@ -76,7 +76,7 @@ PostgreSQL Database directory appears to contain a database; Skipping initializa
 2024-02-29 06:52:16.459 UTC [1] LOG:  listening on IPv6 address "::", port 5432
 ```
 
-因此, 若要更改時區, 可以選擇清空資料庫, 重啟容器, 或是透過指令更改資料庫時區  
+因此, 若要更改時區, 可以選擇清空資料庫, 重啟容器,   
 
 或是直接使用SQL指令更改資料庫時區 
 
