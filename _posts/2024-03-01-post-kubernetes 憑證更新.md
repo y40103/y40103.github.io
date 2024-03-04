@@ -1,5 +1,5 @@
 ---
-title: "[筆記] Kubernetes憑證更新"
+title: "[筆記] Kubernetes 憑證更新"
 categories:
   - 筆記
 tags:
