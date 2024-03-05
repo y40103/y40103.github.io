@@ -10,7 +10,7 @@ toc_label: Index
 mermaid: true
 ---
 
-### 系統環境
+## 系統環境
 
 ```
 DISTRIB_ID=Ubuntu
@@ -31,13 +31,13 @@ VERSION_CODENAME=focal
 UBUNTU_CODENAME=focal
 ```
 
-### 安裝 google-authentication pam
+## 安裝 google-authentication pam
 
 ```
 apt-get install libpam-google-authenticator -y
 ```
 
-### 驗證組合
+## 驗證組合
 ###  方案一 Password + TOTP
 
 #### 設置驗證方式
@@ -61,7 +61,7 @@ echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
 ## 設置使用pam_google_authenticator
 ```
 
-#### 方案二 Password + PublicKey + TOTP
+### 方案二 Password + PublicKey + TOTP
 
 #### 設置驗證方式
 
@@ -86,7 +86,7 @@ echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
 ## 設置使用pam_google_authenticator
 ```
 
-#### 方案三 PublicKey + TOTP
+### 方案三 PublicKey + TOTP
 
 #### 設置驗證方式
 
@@ -115,7 +115,7 @@ echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
 
 
 
-### 重啟service
+## 重啟service
 
 ```
 service ssh restart 
@@ -123,7 +123,7 @@ service ssh restart
 ```
 
 
-### 設定TOTP SECRET
+## 設定TOTP SECRET
 
 
 ***登錄至要開啟totp的user***
@@ -155,7 +155,7 @@ google-authenticator -t -f -d -r 3 -R 30 -w 2
 
 ## 補充
 
-### ssh playground
+### SSH Playground
 
 用容器啟動一個測試環境
 
@@ -280,7 +280,3 @@ ssh -i id_rsa hcc@ssh2
 ## 登入ssh2成功
 
 ```
-
-
-
-
