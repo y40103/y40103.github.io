@@ -1,5 +1,5 @@
 ---
-title: "[筆記] SSH Two-Factor-Auth TOTP"
+title: "[筆記] SSH Two-Factor-Authentication TOTP"
 categories:
   - 筆記
 tags:

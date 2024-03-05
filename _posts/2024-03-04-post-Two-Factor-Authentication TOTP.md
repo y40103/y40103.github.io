@@ -1,5 +1,5 @@
 ---
-title: "[筆記] 2 Factor-Authentication TOTP"
+title: "[筆記] Two-Factor-Authentication TOTP"
 categories:
   - 筆記
 tags:
