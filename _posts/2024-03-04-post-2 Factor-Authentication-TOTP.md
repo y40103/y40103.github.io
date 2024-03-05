@@ -9,9 +9,6 @@ toc_label: Index
 mermaid: true
 ---
 
-# 2 Factor-Authentication
-
-工作上遇到需要 2 Factor Authentication , 這邊記錄一下  
 
 ## 概念
 

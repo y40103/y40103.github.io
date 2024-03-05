@@ -9,8 +9,6 @@ toc_label: Index
 mermaid: true
 ---
 
-# Kubernetes 憑證更新  
-
 
 kubernetes 憑證期限只有一年  
 
