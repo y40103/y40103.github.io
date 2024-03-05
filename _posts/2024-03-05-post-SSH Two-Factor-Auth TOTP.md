@@ -76,15 +76,18 @@ service ssh restart
 
 
 ```
-google-authenticator -t -f -d -w 3 -e 10 -r 3 -R 30
+google-authenticator -t -f -d -r 3 -R 30 -w 2
 
+#-t ：使用 time-based verification
+#-f : save ~/.google_authenticator
+#-d : disable totp token reuse
+#-e : 3組 備用碼, default 1, 使用會被消耗
+#-w : 設置驗證碼的可容許度, 若網路或時間有稍微誤差, 可容許前後2組數值  
 
-#-t ：使用 TOTP 驗證
-#-f : 將配置儲存到 ~/.google_authenticator
-#-d : 允許重複使用先前使用的令牌
-#-w 3 : 允許令牌的視窗大小。預設情況下，令牌每 30 秒過期一次。視窗大小 3 允許在目前令牌之前和#之後使用令牌進行身份驗證以進行時鐘偏移。
-#-e 10 : 產生10個緊急備用代碼
-#-r 3 -R 30 : 限速，每 30 秒允許 3 次登入
+# 登陸限制 30s內 3次
+#-r : set N ,limit login N per every M seconds
+#-R : set N ,limit login N per every M seconds
+
 
 ```
 
@@ -159,8 +162,6 @@ networks:
           gateway: 120.20.0.1
 
 ```
-
-
 
 
 
