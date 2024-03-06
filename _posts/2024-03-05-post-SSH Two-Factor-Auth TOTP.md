@@ -10,27 +10,6 @@ toc_label: Index
 mermaid: true
 ---
 
-## 系統環境
-
-```
-DISTRIB_ID=Ubuntu
-DISTRIB_RELEASE=20.04
-DISTRIB_CODENAME=focal
-DISTRIB_DESCRIPTION="Ubuntu 20.04.6 LTS"
-NAME="Ubuntu"
-VERSION="20.04.6 LTS (Focal Fossa)"
-ID=ubuntu
-ID_LIKE=debian
-PRETTY_NAME="Ubuntu 20.04.6 LTS"
-VERSION_ID="20.04"
-HOME_URL="https://www.ubuntu.com/"
-SUPPORT_URL="https://help.ubuntu.com/"
-BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
-PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
-VERSION_CODENAME=focal
-UBUNTU_CODENAME=focal
-```
-
 ##  系統環境
 
 ```
@@ -177,8 +156,9 @@ google-authenticator -t -f -d -r 3 -R 30 -w 2
 ## 補充
 
 
-### ubuntu 20.04
+用容器啟動一個測試環境
 
+### ubuntu 20.04
 #### Dockerfile
 
 ssh user defaul: user/password:  hcc/example
@@ -196,6 +176,7 @@ RUN touch /home/hcc/.ssh/authorized_keys
 USER root
 EXPOSE 22
 ENTRYPOINT service ssh start && bash
+WORKDIR /root/
 ```
 
 #### docker compose.yaml 
@@ -253,7 +234,12 @@ networks:
 apt-get install libpam-google-authenticator -y
 sed -i 's/ChallengeResponseAuthentication\ no/ChallengeResponseAuthentication\ yes\nAuthenticationMethods publickey,keyboard-interactive\nPasswordAuthentication no\n/g' /etc/ssh/sshd_config
 sed -i 's/@include\ common-auth/\#\ @include\ common-auth/g' /etc/pam.d/sshd
-echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+if grep -qoE "^Auth required pam_google_authenticator.so$" /etc/pam.d/sshd ; then
+        echo "/etc/pam.d/sshd already done"
+else
+        echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+        echo "increase Auth required pam_google_authenticator.so to /etc/pam.d/sshd"
+fi
 service ssh restart
 ```
 
@@ -264,6 +250,9 @@ service ssh restart
 if [ ! -f /tmp/"$USER"_totp_auth_info ]; then
  google-authenticator -t -f -d -r 3 -R 30 -w 2 >> /tmp/"$USER"_totp_auth_info
  grep -o 'http[s]\?://[^"]\+' /tmp/"$USER"_totp_auth_info | wget -i - -O /tmp/"$USER"_qrcode.jpg
+ echo "create totp authentication, detail info at /tmp/"
+else
+  echo "auth_info already existed at /tmp/"
 fi
 
 ```
@@ -275,17 +264,15 @@ fi
 
 ```
 docker compose up -d
-## 將ssh1 public key 丟到 ssh2
+## 手動 將ssh1 public key 丟到 ssh2 步驟省略
 
 docker exec -it ssh2 bash
-
-cd /root
 
 bash root_run.sh
 
 su hcc
 
-cd /home/hcc
+cd ~
 
 bash run.sh
 
@@ -341,6 +328,8 @@ RUN touch /home/hcc/.ssh/authorized_keys
 USER root
 EXPOSE 22
 ENTRYPOINT service ssh start && bash
+WORKDIR /root/
+
 ```
 
 #### docker compose.yaml 
@@ -394,22 +383,31 @@ networks:
 #### root_run.sh
 
 ```
-#!/usr/bin/bash  
-apt-get install libpam-google-authenticator -y  
-sed -i 's/KbdInteractiveAuthentication\ no/KbdInteractiveAuthentication\ yes\nAuthenticationMethods publickey,keyboard-interactive\nPasswordAuthentication no\n/g' /etc/ssh/sshd_config  
-sed -i 's/@include\ common-auth/\#\ @include\ common-auth/g' /etc/pam.d/sshd  
-echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd  
+#!/usr/bin/bash
+apt-get install libpam-google-authenticator -y
+sed -i 's/KbdInteractiveAuthentication\ no/KbdInteractiveAuthentication\ yes\nAuthenticationMethods publickey,keyboard-interactive\nPasswordAuthentication no\n/g' /etc/ssh/sshd_config
+sed -i 's/@include\ common-auth/\#\ @include\ common-auth/g' /etc/pam.d/sshd
+if grep -qoE "^Auth required pam_google_authenticator.so$" /etc/pam.d/sshd ; then
+        echo "/etc/pam.d/sshd already done"
+else
+        echo "Auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+        echo "increase Auth required pam_google_authenticator.so to /etc/pam.d/sshd"
+fi
 service ssh restart
 ```
 
 #### run.sh
 
 ```
-#!/usr/bin/bash  
-if [ ! -f /tmp/"$USER"_totp_auth_info ]; then  
- google-authenticator -t -f -d -r 3 -R 30 -w 2 -C >> /tmp/"$USER"_totp_auth_info  
- grep -o 'http[s]\?://[^"]\+' /tmp/"$USER"_totp_auth_info | wget -i - -O /tmp/"$USER"_qrcode.jpg  
+#!/usr/bin/bash
+if [ ! -f /tmp/"$USER"_totp_auth_info ]; then
+ google-authenticator -t -f -d -r 3 -R 30 -w 2 -C >> /tmp/"$USER"_totp_auth_info
+ grep -o 'http[s]\?://[^"]\+' /tmp/"$USER"_totp_auth_info | wget -i - -O /tmp/"$USER"_qrcode.jpg
+ echo "create totp authentication, detail info at /tmp/"
+else
+  echo "auth_info already existed at /tmp/"
 fi
+
 ```
 
 
@@ -419,17 +417,15 @@ fi
 
 ```
 docker compose up -d
-## 將ssh1 public key 丟到 ssh2
+## 手動 將ssh1 public key 丟到 ssh2 步驟省略
 
 docker exec -it ssh2 bash
-
-cd /root
 
 bash root_run.sh
 
 su hcc
 
-cd /home/hcc
+cd ~
 
 bash run.sh
 
