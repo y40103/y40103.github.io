@@ -272,7 +272,7 @@ bash run.sh
 
 exit
 
-docker cp ssh1:/home/hcc/id_rsa .
+docker cp ssh1:/home/hcc/.ssh/id_rsa .
 
 ssh -i id_rsa hcc@ssh2
 # 輸入驗證碼
