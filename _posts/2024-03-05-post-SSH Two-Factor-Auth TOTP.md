@@ -176,7 +176,6 @@ google-authenticator -t -f -d -r 3 -R 30 -w 2
 
 ## 補充
 
-### SSH Playground
 
 用容器啟動一個測試環境
 
