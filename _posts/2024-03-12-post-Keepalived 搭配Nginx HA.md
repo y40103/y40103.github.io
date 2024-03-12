@@ -3,6 +3,7 @@ title: "[筆記] Keepalived 搭配Nginx HA"
 categories:
   - 筆記
 tags:
+  - Keepalived
   - Nginx
 toc: true
 toc_label: Index
