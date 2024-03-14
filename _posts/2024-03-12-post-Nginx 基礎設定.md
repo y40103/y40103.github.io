@@ -177,18 +177,18 @@ host:port 指向的是一個ningx的目錄物件
 ## Location
 
 解析request後    
-藉由該request的host:port 導向特定nginx server物件  
-再由該request的uri path 導向特定的nginx location物件  
-location可分  
-由 root,index 將本機檔案內容 response回去  , index為開放的檔案名稱, 預設index.html,其他不寫則會304  
-或  
+藉由該request的host:port 導向特定nginx server物件   
+再由該request的uri path 導向特定的nginx location物件    
+location可分    
+由 root,index 將本機檔案內容 response回去  , index為開放的檔案名稱, 預設index.html,其他不寫則會304   
+或   
 由 proxy_pass 將其他主機的服務內容 response回去  
 <br/>  
-Location uri path匹配方式依開頭符號會有所不同
+Location uri path匹配方式依開頭符號會有所不同  
 
-> 抽象化概念
-> host:port  nginx 根目錄物件
-> uri path  nginx 根目錄物件下的檔案/目錄
+> 抽象化概念  
+> host:port  nginx 根目錄物件   
+> uri path  nginx 根目錄物件下的檔案/目錄   
 
 
 | 開頭符號 | 說明           |
@@ -204,11 +204,11 @@ Location uri path匹配方式依開頭符號會有所不同
 
 ***須注意 location匹配後 也會將匹配的pattern作為 uri 接在root後面***
 
-以下用location的path來說明
+以下用location的path來說明  
 
 ### `=`
 
-需要全部符合才會匹配
+需要全部符合才會匹配  
 
 ```
 location = /test {
@@ -224,7 +224,7 @@ location = /test {
 
 ### `^~`
 
-必須以特定字串開頭才會匹配
+必須以特定字串開頭才會匹配  
 
 ```
 location ^~ /test {
@@ -237,7 +237,7 @@ location ^~ /test {
 
 ### `~`
 
-正則表達式, 區分大小寫
+正則表達式, 區分大小寫  
 
 ```
 location ~ /test$ {
@@ -245,15 +245,15 @@ location ~ /test$ {
     index  index.html index.htm;
 }
 
-# /test     可
-# /Test/    不可
-# /test/23  不可
-# /test2    不可
+# /test     可  
+# /Test/    不可  
+# /test/23  不可  
+# /test2    不可  
 ```
 
 ### `~*`
 
-正則表達式, 不區分大小寫
+正則表達式, 不區分大小寫  
 
 ```
 location ~* /test$ {
@@ -268,7 +268,7 @@ location ~* /test$ {
 
 ### `/`
 
-通用匹配, 會匹配所有的路徑
+通用匹配, 會匹配所有的路徑  
 
 ```
 location / {
@@ -296,11 +296,11 @@ location /test {
 
 ## root & index
 
-> 抽象類
-> Location uri path  nginx 目錄物件下的檔案/目錄 物件
+> 抽象類  
+> Location uri path  nginx 目錄物件下的檔案/目錄 物件  
 
-root 定義 Location 的檔案根目錄
-index 定義 Location 的檔案名稱
+root 定義 Location 的檔案根目錄   
+index 定義 Location 的檔案名稱  
 
 用於輸出本機的特定檔案/目錄   
 層級於   
@@ -309,8 +309,8 @@ http -> server -> location -> index
 root 主要是定義想要輸出檔案的目錄, 通常與index一起使用   
 index 則是定義想要輸出的檔案名稱,  
 
-假設想要輸出 /home/root/mypage/index.html
-可
+假設想要輸出 /home/root/mypage/index.html  
+可  
 
 ```
 location / {
@@ -319,8 +319,8 @@ location / {
 }
 ```
 
-***需注意目錄是沒辦法遞迴, 若有靜態檔案是在該目錄的目錄內, 讀取上是會有問題的***
-root 沒用絕對路徑, 預設位置為 /usr/share/nginx  
+***需注意目錄是沒辦法遞迴, 若有靜態檔案是在該目錄的目錄內, 讀取上是會有問題的***  
+root 沒用絕對路徑, 預設位置為 /usr/share/nginx    
 
 
 ## proxy_pass
@@ -359,15 +359,15 @@ server {
 upstream 用於定義一組server群的進入點, 可用於設定load balance策略   
 ***使用時 須注意load balance對有狀態服務的影響***  
 
-層級在http -> upstream
+層級在http -> upstream  
 
-與server是同一層級的
+與server是同一層級的  
 
-若用瀏覽器 可關閉cache,,否則可能看不出效果 chrome,F12, network, disable cache, 先不不關閉開發者頁面, 直接F5 重新整理,
+若用瀏覽器 可關閉cache,,否則可能看不出效果 chrome,F12, network, disable cache, 先不不關閉開發者頁面, 直接F5 重新整理,  
 應該可看出效果    
-自己測試時 若不停留開發者介面還是會吃cache , 待釐清
+自己測試時 若不停留開發者介面還是會吃cache , 待釐清  
 
-***須注意 upstream內的host, 不能有http:// ... , 只能直接host***
+***須注意 upstream內的host, 不能有http:// ... , 只能直接host***  
 
 ```
 upstream backends {
@@ -393,7 +393,7 @@ server {
 }
 ```
 
-### load balance 策略後綴關鍵字
+### load balance 策略後綴關鍵字  
 
 | 關鍵字    | 說明                                  |
 |--------|-------------------------------------|
@@ -401,8 +401,8 @@ server {
 | down   | 不參與 load balance                    |
 | backup | 備援機 平時不參與, 無機器可用時 才會參與              |
 
-weight 不設定則是平均輪詢  
-若有設定則造成權重比例進行輪詢
+weight 不設定則是平均輪詢   
+若有設定則造成權重比例進行輪詢  
 
 ```
 upstream backends {
@@ -412,7 +412,7 @@ upstream backends {
 }
 ```
 
-down 表示該server不參予load balance,
+down 表示該server不參予load balance,  
 
 ```
 upstream backends {
@@ -424,7 +424,7 @@ upstream backends {
 
 backup 表示該server為備援機, 平時不參與load balance, 當其他server都無法提供服務時, 才會參與   
 啟動機制, 嘗試連線 161.25.0.4, 但若這台無法連線 等待至timeout, 下次請求就會轉至 161.25.0.5   
-實際上每次連線還是會嘗試找 161.25.0.4 這台, 若該台回復服務後, 161.25.0.5 會馬上再次被閒置
+實際上每次連線還是會嘗試找 161.25.0.4 這台, 若該台回復服務後, 161.25.0.5 會馬上再次被閒置  
 
 ```
 upstream backends {
@@ -436,7 +436,7 @@ upstream backends {
 
 ### 其他load balance策略
 
-hash偏定向分配,  
+hash偏定向分配,   
 
 | 關鍵字        | 說明                        |
 |------------|---------------------------|
@@ -448,11 +448,11 @@ hash偏定向分配,
 
 ## proxy_pass 靜態檔案
 
-這邊在nginx直接設定 proxypass後的 服務會用到的靜態檔案
+這邊在nginx直接設定 proxypass後的 服務會用到的靜態檔案  
 
-這邊把proxy_pass後的服務會用到的靜態檔案放在 proxy_pass主機上
+這邊把proxy_pass後的服務會用到的靜態檔案放在 proxy_pass主機上  
 
-範例
+範例  
 ```
 server {
     listen       80;
@@ -475,7 +475,7 @@ server {
 }
 ```
 
-這邊概念應該是
+這邊概念應該是  
 
 ```mermaid
 
@@ -486,7 +486,7 @@ graph LR
     C --> E[可用 path: /image]
 ```
 可以將ngtest.321test.com:80 理解成一個空目錄   
-uri定義該目錄有啥檔案
+uri定義該目錄有啥檔案  
 
 ```mermaid
 graph LR
@@ -502,14 +502,14 @@ graph LR
     A --> D[ image/...jpg]
 ```
 
-因此 ngtest.321test.com 也可以讀取到proxy_pass的 /image/...jpg
+因此 ngtest.321test.com 也可以讀取到proxy_pass的 /image/...jpg  
 
 
 ## rewrite
 
-可以使外部使用偽uri,不將真正的uri暴露出去, 這樣可以保護內部的uri, 也可以使uri更加美觀
+可以使外部使用偽uri,不將真正的uri暴露出去, 這樣可以保護內部的uri, 也可以使uri更加美觀  
 
-靜態範例
+靜態範例  
 
 ```
 server {
@@ -532,9 +532,9 @@ server {
 ```
 
 lcation / 會批配所有的uri  
-但rewrite只會批配/2.html, 並且將其轉換成/index.html
+但rewrite只會批配/2.html, 並且將其轉換成/index.html  
 
-動態範例
+動態範例  
 
 ```
 server {
@@ -556,12 +556,12 @@ server {
 }
 ```
 
-批配 開頭/ 數字1-9 一個或多個 .html 結尾的uri, 並且將其轉換成/index.html?page=$1  
+批配 開頭/ 數字1-9 一個或多個 .html 結尾的uri, 並且將其轉換成/index.html?page=$1    
 $1 代表第一個返回的內容 也就是第一組括號的內容  
 假設輸入 http://ngtest.4321test.com/32.html  
 實際上 會轉換成 http://ngtest.4321test.com/index.html?page=32   
 break 確保rewrite後的uri不會再次進行location的匹配,    
-其他關鍵字
+其他關鍵字  
 
 | 關鍵字       | 說明                      |
 |-----------|-------------------------|
@@ -572,13 +572,13 @@ break 確保rewrite後的uri不會再次進行location的匹配,
 
 ## referer
 
-這個主要是用於防止盜連, 藉由referer來判斷客戶端是否是從指定的網站連過來的
+這個主要是用於防止盜連, 藉由referer來判斷客戶端是否是從指定的網站連過來的  
 
 referer 是由瀏覽器操作在http request headers中的一個field, 使用瀏覽器訪問特定頁面時,該頁面可能有一些其他的資源, 如圖片,API之類的資源,   
 在一并request這些資源時, 瀏覽器會在request headers中加入referer, 表示是從哪個頁面發起請求連過來的    
-而初次訪問網站時, referer是空的, 這時可以用來判斷是否是直接訪問的網站, 或是從其他網站連過來的
+而初次訪問網站時, referer是空的, 這時可以用來判斷是否是直接訪問的網站, 或是從其他網站連過來的  
 
-範例
+範例  
 ```
 server {
     listen       80;
@@ -612,7 +612,7 @@ ngtest.54321test.com 是map 127.0.0.1:80 map 161.25.0.2
 要能正常訪問圖片, 要訪問的網頁直接是 161.25.0.2/ , 該網頁上有內嵌 /image/duck.jpge, 這樣referer才會是161.25.0.2  
 <br/>
 
-小坑
+小坑  
 ```bash
 curl -e http://XXXXX OOOOOO
 ## -e 使用referer, 代表是從哪個網站連過來的
@@ -640,9 +640,9 @@ curl -e "http://161.25.0.2" -I ngtest.54321test.com/image/duck.jpg
 
 
 若增加none 可以讓referer為空的時候也能訪問圖片, 直接不訪問特定網站 間接訪問圖片  
-而是直接訪問圖片 ngtest.54321test.com/image/duck.jpg, 是可以訪問是可以成功的
+而是直接訪問圖片 ngtest.54321test.com/image/duck.jpg, 是可以訪問是可以成功的  
 
-有None的範例  , 可直接訪問 ngtest.54321test.com/image/duck.jpg
+有None的範例  , 可直接訪問 ngtest.54321test.com/image/duck.jpg  
 ```
 server {
     listen       80;
@@ -704,7 +704,7 @@ nginx.conf中的http{}
 include /etc/nginx/conf.d/*.conf;
 ```
 
-本機host設定
+本機host設定  
 
 ```host
 127.0.0.1 ngtest.test1
@@ -721,15 +721,15 @@ include /etc/nginx/conf.d/*.conf;
 127.0.0.1 ngtest.321test.com
 ```
 
-若直接用IP直接連線, 會連忽略domain name的設定  
-會連線至 domain name = IP 的 第一組設定
+若直接用IP直接連線, 會連忽略domain name的設定    
+會連線至 domain name = IP 的 第一組設定  
 
 ### 不同domain name 映射不同的路徑檔案
 
-兩個domain name 綁同一個ip 可連至同一個主機 各domain name 可連至 不同的路徑檔案
+兩個domain name 綁同一個ip 可連至同一個主機 各domain name 可連至 不同的路徑檔案  
 
-ngtest.test1 --> image.html
-ngtest.test2 --> video.html
+ngtest.test1 --> image.html  
+ngtest.test2 --> video.html  
 
 ```
 server {
@@ -791,9 +791,9 @@ server {
 ### 不同 port 映射不同的路徑檔案
 
 監聽port localhost:88, --> image.html   
-監聽port localhost:87, --> video.html
+監聽port localhost:87, --> video.html  
 
-conf.d/01_test.conf
+conf.d/01_test.conf  
 
 ```
 server {
@@ -835,7 +835,7 @@ server {
 
 ### 多個domain name 映射同一個路徑檔案
 
-ngtest.test3 , ngtest.test4 --> txt.html
+ngtest.test3 , ngtest.test4 --> txt.html  
 
 ```
 server {
@@ -926,8 +926,8 @@ server {
 }
 ```
 
-http://ngtest.test6.ooxx
-http://ngtest.test7.ooxx
+http://ngtest.test6.ooxx  
+http://ngtest.test7.ooxx  
 
 ### 連至nginx後端的服務
 

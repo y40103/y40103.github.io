@@ -15,7 +15,7 @@ pg 備份還原script紀錄
 
 ### 特定資料庫dump
 
-```
+```bash
 pg_dump -U $POSTGRES_USERNAME -h $PGHOST -Fc $POSTGRES_DB > /tmp/pg_dump/pg_$(date +%Y%m%d%H%M).sql
 
 -h dbhost
@@ -30,7 +30,7 @@ pg_dump -U $POSTGRES_USERNAME -h $PGHOST -Fc $POSTGRES_DB > /tmp/pg_dump/pg_$(da
 
 ### 特定資料庫restore
 
-```
+```bash
 pg_restore -h $POSTGRES_DB -U postgres -d $$POSTGRES_DB -a  -Fc /tmp/pg_dump/pg_dump_latest_backup.sql
 
 -h dbhost
@@ -51,7 +51,7 @@ pg_restore -h $POSTGRES_DB -U postgres -d $$POSTGRES_DB -a  -Fc /tmp/pg_dump/pg_
 
 dump 與 restore 的時候 可以直接用文件(~/.pgpass)跳過密碼輸入, 權限需600
 
-```
+```bash
 
 echo PGdb:$PGPORT:$POSTGRES_DB:$POSTGRES_USERNAME:$POSTGRES_PASSWORD > ~/.pgpass
 ## 新增 .pgpass
@@ -67,7 +67,7 @@ chmod 600 ~/.pgpass
 
 ### dump 至 S3 
 
-```
+```bash
 #!/usr/bin/bash
 echo "$(date +%Y%m%d%H%M) start pg dump" >> /src/logs/pg_backup.log
 echo PGdb:$PGPORT:$POSTGRES_DB:$POSTGRES_USERNAME:$POSTGRES_PASSWORD > /root/.pgpass
@@ -93,7 +93,7 @@ echo "$(date +%Y%m%d%H%M) upload to s3 success" >> /src/logs/pg_backup.log
 
 ### S3 restore 
 
-```
+```bash
 #!/usr/bin/bash
 echo "$(date +%Y%m%d%H%M) start pg dump" >> /src/logs/pg_backup.log
 echo PGdb:$PGPORT:$POSTGRES_DB:$POSTGRES_USERNAME:$POSTGRES_PASSWORD > /root/.pgpass
