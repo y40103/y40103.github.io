@@ -689,6 +689,51 @@ curl -e "http://161.25.0.2" -I ngtest.54321test.com/image/duck.jpg
 ## 此為模擬 訪問 http://161.25.0.2 , 該網頁上有內嵌 /image/duck.jpg, 這樣referer會是 161.25.0.2
 ```
 
+
+## Header
+
+可將request header 轉至 後端服務
+
+```
+location / {
+    proxy_pass http://
+    proxy_set_header Host $host;
+    roxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
+
+### Host $host
+
+主要是表示該客戶端請求的的host
+
+```
+Host: example.com
+```
+
+### X-Real-IP $remote_addr
+
+非標準用法, 為表示該客戶端ip
+$remote_addr 為nginx變數, 代表客戶端ip,
+
+```
+X-Real-IP: 192.168.0.100
+```
+<br/>
+通常ningx代理後, 傳至後端服務, 顯示的會是nginx的ip, 而不是客戶端的ip, 使用X-Real-IP 可以幫助將客戶端的ip傳至後端服務  
+
+### X-Forwarded-For $proxy_add_x_forwarded_for
+
+該方式為標準用法, 代表該客戶端的ip, 但是會將所有經過的proxy ip都列出來, 用逗號分隔
+
+```
+X-Forwarded-For: 192.168.0.100, 10.0.0.1, 172.16.0.10
+```
+
+
+
+
+
 ## 測試設定範例
 
 ```bash
@@ -1053,43 +1098,27 @@ server {
 }
 ```
 
-### Header 
+### $domain/$fix_path/$path1/$path2 > server:port/$path1/$path2
 
-可將request header 轉至 後端服務
+將 uri /main 開頭的請求轉至 後端服務  
+
+e.g.  example.com/main >  server:8080
+e.g.  example.com/main/api/health >  server:8000/api/health
 
 ```
-location / {
-    proxy_pass http://
+server {
+   listen 80;
+   server_name ${DOMAIN};
+
+  location ~ ^/main/ {
     proxy_set_header Host $host;
-    roxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    rewrite ^/main/(.*) /$1 break;
+    proxy_pass http://server:8000;
+  }
+
+}
 ```
 
-
-#### Host $host
-
-主要是表示該客戶端請求的的host
-
-```
-Host: example.com
-```
-
-#### X-Real-IP $remote_addr
-
-非標準用法, 為表示該客戶端ip
-$remote_addr 為nginx變數, 代表客戶端ip,  
-
-```
-X-Real-IP: 192.168.0.100
-```
-<br/>
-通常ningx代理後, 傳至後端服務, 顯示的會是nginx的ip, 而不是客戶端的ip, 使用X-Real-IP 可以幫助將客戶端的ip傳至後端服務  
-
-#### X-Forwarded-For $proxy_add_x_forwarded_for
-
-該方式為標準用法, 代表該客戶端的ip, 但是會將所有經過的proxy ip都列出來, 用逗號分隔   
-
-```
-X-Forwarded-For: 192.168.0.100, 10.0.0.1, 172.16.0.10
-```
 
