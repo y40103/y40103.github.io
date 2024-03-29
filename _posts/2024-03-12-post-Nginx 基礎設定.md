@@ -1053,4 +1053,43 @@ server {
 }
 ```
 
+### Header 
+
+可將request header 轉至 後端服務
+
+```
+location / {
+    proxy_pass http://
+    proxy_set_header Host $host;
+    roxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
+
+#### Host $host
+
+主要是表示該客戶端請求的的host
+
+```
+Host: example.com
+```
+
+#### X-Real-IP $remote_addr
+
+非標準用法, 為表示該客戶端ip
+$remote_addr 為nginx變數, 代表客戶端ip,  
+
+```
+X-Real-IP: 192.168.0.100
+```
+<br/>
+通常ningx代理後, 傳至後端服務, 顯示的會是nginx的ip, 而不是客戶端的ip, 使用X-Real-IP 可以幫助將客戶端的ip傳至後端服務  
+
+#### X-Forwarded-For $proxy_add_x_forwarded_for
+
+該方式為標準用法, 代表該客戶端的ip, 但是會將所有經過的proxy ip都列出來, 用逗號分隔   
+
+```
+X-Forwarded-For: 192.168.0.100, 10.0.0.1, 172.16.0.10
+```
 
