@@ -905,3 +905,30 @@ job2:
       - my_var
 ```
 
+### 範例
+
+
+```
+stages:
+  - test
+variables:
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/test_pj
+  GIT_CLEAN_FLAGS: none
+build:
+  stage: test
+  timeout: 30 minutes
+  script:
+    - export PROTOCOL=$DEV_PROTOCOL
+    - export DOMAIN=$DEV_DOMAIN
+    - export ENV_PREFIX=$DEV_ENV_PREFIX
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+    - export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+    - docker compose --profile all down
+    - docker compose --profile all up -d
+    - docker exec -w /src main-api-server bash -c "coverage run -m pytest"
+  only:
+    - develop
+  tags:
+    - test
+```
