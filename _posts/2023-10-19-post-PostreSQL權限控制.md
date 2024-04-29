@@ -332,4 +332,53 @@ revoke <關鍵字> on <schema_name>.<table_name> from <user_name>
 
 - 有最上層物件權限不代表有權限可以訪問下層其他人物件, 如G有 G_DB為 onwer 但給 H database物件權限, 他可以在G_DB創建 schema/table/row,  他建了一個 H_schema ,  H又給了I H_schema的權限, I 在 H schema下 創建  I_table,   此時H與G都是無法訪問操作 I_table的 ,  需要 I 給 H I_table權限, H 才能訪問操作 I_table,  而G要操作 I_table 則需要滿足   H給 H_schema權限, I也給 I_table權限  
 
-- superuser = 不會觸發鑒權機制 因此可以做任何操作  
+- superuser = 不會觸發鑒權機制 因此可以做任何操作 
+ 
+
+
+
+
+## 參考範例
+
+### Create Database
+```
+create database <database name>
+
+
+REVOKE ALL PRIVILEGES ON DATABASE <database> FROM public;
+```
+
+
+
+### Create Read-Only User
+```
+create role <username> login encrypted password '<mypassword>'
+
+Grant connect on database <database name >to <username>
+
+GRANT pg_read_all_data TO <username>;
+
+```
+
+
+1
+### Create Dev User
+
+
+
+```
+create role <username> login encrypted password '<mypassword>'
+
+Grant all on database <database name> to <username>
+
+```
+
+
+```
+grant usage on schema <schema_name> to <user_name>
+
+grant all on <schema_name>.<table_name> to <user_name>
+
+```
+
+
