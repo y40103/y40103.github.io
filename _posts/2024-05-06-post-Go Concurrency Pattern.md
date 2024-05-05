@@ -8,7 +8,6 @@ toc: true
 toc_label: Index
 ---
 
-# Go Concurrency Pattern
 
 較常見的concurrency pattern, 持續更新...  
 
