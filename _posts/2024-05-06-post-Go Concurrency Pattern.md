@@ -69,7 +69,7 @@ done
 Process finished with the exit code 0
 ```
 
-### channel done
+## channel done
 
 類似 generator，產生一個可持續輸出的channel, 但可以在從外部控制何時結束
 
