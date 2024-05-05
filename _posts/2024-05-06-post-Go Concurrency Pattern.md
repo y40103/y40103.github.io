@@ -9,7 +9,7 @@ toc_label: Index
 ---
 
 
-較常見的concurrency pattern, 持續更新...  
+concurrency pattern 整理
 
 
 ## generator
