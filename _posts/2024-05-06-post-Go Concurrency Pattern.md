@@ -12,6 +12,7 @@ toc_label: Index
 
 較常見的concurrency pattern, 持續更新...  
 
+
 ## generator
 
 返回一個可以持續產生數值的 channel
@@ -784,7 +785,13 @@ func main() {
 
 }
 ```
-
+```
+任務完成
+執行once任務
+任務完成
+任務完成
+任務完成
+```
 
 ## or channel done
 
@@ -821,12 +828,14 @@ func ActivateFunctionAfter(duration time.Duration) <-chan struct{} {
 	return c
 }
 
-func or_channel_done(ctx context.Context, chans ...<-chan struct{}) <-chan struct{} {
+func or_channel_done(ctx context.Context, wp *sync.WaitGroup, chans ...<-chan struct{}) <-chan struct{} {
 	ch := make(chan struct{})
 	once := new(sync.Once)
 	go func() {
 		for _, inputChan := range chans {
 			go func(inputChan <-chan struct{}) {
+				wp.Add(1)
+				defer wp.Done()
 				for {
 					select {
 					case <-ctx.Done():
@@ -852,16 +861,21 @@ func or_channel_done(ctx context.Context, chans ...<-chan struct{}) <-chan struc
 }
 
 func main() {
-
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*11)
+	wp := &sync.WaitGroup{}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 	ch1 := ActivateFunctionAfter(time.Second * 7)
-	ch2 := ActivateFunctionAfter(time.Second * 6)
+	ch2 := ActivateFunctionAfter(time.Second * 11)
 	ch3 := ActivateFunctionAfter(time.Second * 9)
-	res := or_channel_done(ctx, ch1, ch2, ch3)
+	res := or_channel_done(ctx, wp, ch1, ch2, ch3)
 	<-res
-	fmt.Println("done...")
+	wp.Wait()
+```
 
-}
+```
+任務逾時....
+timeout, 執行once任務
+任務逾時....
+任務逾時....
 ```
 
 
@@ -1077,3 +1091,5 @@ func main() {
 505
 506
 ```
+
+
