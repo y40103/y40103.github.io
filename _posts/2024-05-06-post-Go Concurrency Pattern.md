@@ -11,7 +11,6 @@ toc_label: Index
 
 concurrency pattern 整理
 
-
 ## generator
 
 返回一個可以持續產生數值的 channel
@@ -1092,3 +1091,238 @@ func main() {
 ```
 
 
+## worker pool
+
+建立一個固定數量的worker goroutine, 用於處理任務,  通常會與cpu數量相同 (可同時處理的任務數量)  
+基本上就是 producer 與 consumer概念,  producer 會將任務放入channel, consumer 會從channel取出任務處理  
+
+```mermaid
+graph LR
+    A[Producer] -->|task| B[TaskParmChannel]
+    B -->|taskParm1| C[Worker1]
+    B -->|taskParm2| D[Worker2]
+    B -->|taskParm3| E[Worker3]
+    B -->|taskParmN..| F[WorkerN...]
+    C -->|result| G[OutputChannel]
+    D -->|result| G
+    E -->|result| G
+    F -->|result| G
+```
+
+範例   
+這邊假設有五十組任務, 啟動16個worker, 每個任務需花費5秒, 這邊會等待所有任務完成後, 並計算總耗時  
+```golang
+package main
+
+import (
+	"context"
+	"fmt"
+	"sync"
+	"time"
+)
+
+func MyTask(WorkerID int, para int) string {
+
+	time.Sleep(time.Second * 5)
+	fmt.Println("WorkerID:", WorkerID, "task_id:", para, "執行中")
+	return fmt.Sprintf("worker %v 已完成task %v ########", WorkerID, para)
+
+}
+
+func Worker(ctx context.Context, once *sync.Once, workerID int, inputParam <-chan int, output chan string) {
+
+	defer once.Do(func() {
+		fmt.Println("Worker:", workerID, "等待最後一組結束")
+		time.Sleep(time.Second * 6)
+		close(output)
+	})
+
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("worker已逾時.........close worker", workerID)
+			return
+		case p, ok := <-inputParam:
+			if !ok || ctx.Err() != nil {
+				return
+			}
+			res := MyTask(workerID, p)
+			output <- res
+		}
+	}
+}
+
+func GenerateTaskParm() chan int {
+	inputParam := make(chan int)
+
+	go func() {
+		defer close(inputParam)
+		for i := 0; i < 50; i++ {
+			inputParam <- i
+			time.Sleep(time.Millisecond * 100)
+		}
+	}()
+
+	return inputParam
+}
+
+func GenerateWorkerID(CPUNum int) chan int {
+	workerID := make(chan int)
+
+	go func() {
+		for i := 0; i < CPUNum; i++ {
+			workerID <- i
+		}
+		close(workerID)
+	}()
+
+	return workerID
+}
+
+func main() {
+
+	now := time.Now()
+
+	CPUNum := 16
+	// 用來紀錄goroutine worker編號
+	workerID := GenerateWorkerID(CPUNum)
+
+	// 函數參數
+	para := GenerateTaskParm()
+
+	// 用於返回 task完成後的結果
+	output := make(chan string)
+
+	wg := &sync.WaitGroup{}
+	wg.Add(CPUNum)
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*100)
+	once := new(sync.Once)
+	go func() {
+		for i := 0; i < CPUNum; i++ {
+			go func() {
+				defer wg.Done()
+				WorkerID := <-workerID
+				Worker(ctx, once, WorkerID, para, output)
+			}()
+		}
+	}()
+	count := 0
+	go func() {
+		for val := range output {
+			fmt.Println(val)
+			count += 1
+		}
+	}()
+	wg.Wait()
+	cost := time.Since(now)
+	fmt.Println("總計完成數量:", count)
+	fmt.Println("總計耗時:", cost)
+
+}
+```
+
+```
+WorkerID: 0 task_id: 0 執行中
+worker 0 已完成task 0 ########
+WorkerID: 15 task_id: 1 執行中
+worker 15 已完成task 1 ########
+WorkerID: 1 task_id: 2 執行中
+worker 1 已完成task 2 ########
+WorkerID: 2 task_id: 3 執行中
+worker 2 已完成task 3 ########
+WorkerID: 3 task_id: 4 執行中
+worker 3 已完成task 4 ########
+WorkerID: 4 task_id: 5 執行中
+worker 4 已完成task 5 ########
+WorkerID: 10 task_id: 6 執行中
+worker 10 已完成task 6 ########
+WorkerID: 11 task_id: 7 執行中
+worker 11 已完成task 7 ########
+WorkerID: 12 task_id: 8 執行中
+worker 12 已完成task 8 ########
+WorkerID: 13 task_id: 9 執行中
+worker 13 已完成task 9 ########
+WorkerID: 7 task_id: 10 執行中
+worker 7 已完成task 10 ########
+WorkerID: 9 task_id: 11 執行中
+worker 9 已完成task 11 ########
+WorkerID: 6 task_id: 12 執行中
+worker 6 已完成task 12 ########
+WorkerID: 8 task_id: 13 執行中
+worker 8 已完成task 13 ########
+WorkerID: 5 task_id: 14 執行中
+worker 5 已完成task 14 ########
+WorkerID: 14 task_id: 15 執行中
+worker 14 已完成task 15 ########
+WorkerID: 0 task_id: 16 執行中
+worker 0 已完成task 16 ########
+WorkerID: 15 task_id: 17 執行中
+worker 15 已完成task 17 ########
+WorkerID: 1 task_id: 18 執行中
+worker 1 已完成task 18 ########
+WorkerID: 2 task_id: 19 執行中
+worker 2 已完成task 19 ########
+WorkerID: 3 task_id: 20 執行中
+worker 3 已完成task 20 ########
+WorkerID: 4 task_id: 21 執行中
+worker 4 已完成task 21 ########
+WorkerID: 10 task_id: 22 執行中
+worker 10 已完成task 22 ########
+WorkerID: 11 task_id: 23 執行中
+worker 11 已完成task 23 ########
+WorkerID: 12 task_id: 24 執行中
+worker 12 已完成task 24 ########
+WorkerID: 13 task_id: 25 執行中
+worker 13 已完成task 25 ########
+WorkerID: 7 task_id: 26 執行中
+worker 7 已完成task 26 ########
+WorkerID: 9 task_id: 27 執行中
+worker 9 已完成task 27 ########
+WorkerID: 6 task_id: 28 執行中
+worker 6 已完成task 28 ########
+WorkerID: 8 task_id: 29 執行中
+worker 8 已完成task 29 ########
+WorkerID: 5 task_id: 30 執行中
+worker 5 已完成task 30 ########
+WorkerID: 14 task_id: 31 執行中
+worker 14 已完成task 31 ########
+WorkerID: 0 task_id: 32 執行中
+worker 0 已完成task 32 ########
+WorkerID: 15 task_id: 33 執行中
+worker 15 已完成task 33 ########
+WorkerID: 1 task_id: 34 執行中
+worker 1 已完成task 34 ########
+Worker: 1 等待最後一組結束
+WorkerID: 2 task_id: 35 執行中
+worker 2 已完成task 35 ########
+WorkerID: 3 task_id: 36 執行中
+worker 3 已完成task 36 ########
+WorkerID: 4 task_id: 37 執行中
+worker 4 已完成task 37 ########
+WorkerID: 10 task_id: 38 執行中
+worker 10 已完成task 38 ########
+WorkerID: 11 task_id: 39 執行中
+worker 11 已完成task 39 ########
+WorkerID: 12 task_id: 40 執行中
+worker 12 已完成task 40 ########
+WorkerID: 13 task_id: 41 執行中
+worker 13 已完成task 41 ########
+WorkerID: 7 task_id: 42 執行中
+worker 7 已完成task 42 ########
+WorkerID: 9 task_id: 43 執行中
+worker 9 已完成task 43 ########
+WorkerID: 6 task_id: 44 執行中
+worker 6 已完成task 44 ########
+WorkerID: 8 task_id: 45 執行中
+worker 8 已完成task 45 ########
+WorkerID: 5 task_id: 46 執行中
+worker 5 已完成task 46 ########
+WorkerID: 14 task_id: 47 執行中
+worker 14 已完成task 47 ########
+WorkerID: 0 task_id: 48 執行中
+worker 0 已完成task 48 ########
+WorkerID: 15 task_id: 49 執行中
+worker 15 已完成task 49 ########
+總計完成數量: 50
+總計耗時: 21.207082327s
+```
