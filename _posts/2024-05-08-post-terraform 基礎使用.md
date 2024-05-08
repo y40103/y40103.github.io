@@ -16,7 +16,7 @@ toc_label: Index
 
 定義 provider
 
-```HCL
+```
 provider "aws" {
   region     = "OOO"
   access_key = "XXX"
@@ -31,7 +31,7 @@ terraform init
 ## 會建立該provider所需的工具包  
 ```
 
-編寫main.tf, 主要使用HCL  
+編寫main.tf, 主要使用HCL 
 
 ## AWS 基礎操作
 
@@ -39,10 +39,9 @@ terraform AWS的基本資源調用,
 
 ### resource
 
-主要用來定義資源單位 , 後續可用 指令對資源進行操作
+主要用來定義資源單位 , 後續可用指令對資源進行操作
 
-```HCL
-
+```hcl
 resource "aws_vpc" "development_vpc" {
   cidr_block       = "10.0.0.0/16"
   instance_tenancy = "default"
@@ -57,7 +56,7 @@ resource "aws_vpc" "development_vpc" {
 
 主要用來檢索已存在的資源
 
-```HCL
+```
 
 data "aws_vpc" "default" {
   default = true
@@ -136,7 +135,7 @@ terraform state $資源名稱
 
 主要是在config佈署後, 可以輸出佈署資源的特定屬性至stdout
 
-```HCL
+```
 output "dev-vpc-id" {
   value = aws_vpc.development_vpc.id
 }
@@ -154,7 +153,7 @@ output "dev-vpc-id" {
 | description | 變數說明                   |
 | type        | 宣告變數類型, Optional, 可不定義 |
 
-```HCL
+```
 variable "subnet_cidr_block" {
   description = "test for variable"
   type        = string
@@ -246,8 +245,8 @@ test_in_string = "${var.example_string} in string"
 
 ### Nested
 
-```HCL
 
+```hcl
 variable "cidr_blocks" {
   description = "test nested var"
   type        = list(
@@ -260,8 +259,7 @@ variable "cidr_blocks" {
 }
 ```
 
-```HCL
-
+```hcl
 my_cidr_block = cidr_blocks[0].cidr_block
 
 ```
@@ -312,7 +310,7 @@ terraform apply -var "subnet_cidr_block=10.0.2.0/24"
 
 定義value
 
-```
+```hcl
 subnet_cidr_block="10.0.2.0/24"
 ```
 
@@ -351,7 +349,7 @@ terraform apply -var-file $variable_file
 為變數設定預設值, 若設有預設值時, 則不會prompt輸入, 若要使用新輸入的數值則需使用 Arg 或是 Variable file ,   
 無使用任何輸入數值手段, 一律使用預設值
 
-```HCL
+```hcl
 variable "subnet_cidr_block" {
   description = "test for variable"
   default     = "10.0.1/24"
@@ -370,7 +368,7 @@ variable "subnet_cidr_block" {
 e.g. AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION   
 
 若無設定env, 則需   
-```HCL
+```
 provider "aws" {
   region     = "OOO"
   access_key = "XXX"
@@ -386,8 +384,8 @@ export AWS_SECRET_ACCESS_KEY=XXX
 export ArS_REGION=@@@
 ```
 僅需  
-```HCL
 
+```hcl
 provider "aws" {}
 ```
 
@@ -404,7 +402,7 @@ provider "aws" {}
 export TF_VAR_avail_zone="ap-northeast-1"
 ```
 
-```HCL
+```hcl
 variable avail_zone {}
 
 output test_echo1 {
@@ -456,17 +454,17 @@ test_echo2 = "ap-northeast-1"
 ## modules
 
 模組化, 用於將config拆分成多個檔案, 實際上拆分為module後, 使用上是類似函數  
+module底下的子目錄就與一般HCL相同, 只是可以用多個 \*.tf檔案做分類
 
-module底下的子目錄就與一般HCL相同, 只是可以用多個 *.tf檔案做分類  
-較大的差異在於
 
-- 若有需要將apply之後才會知道的數值輸出給其他module引用, 需使用output輸出該變數 
+- 若有需要將apply之後才會知道的數值輸出給其他module引用, 需使用output輸出該變數   
 - 定義的變數會作為之後調用該module時的輸入 類似 f(x,y) , 要調用該模組f 需輸入x,y, 
 - 通常module調用會在最外層的main, 語法範例如下, source為module的目錄路徑, 其他就是在module中定義的變數 , 這邊需輸入這些變數值  
 - 若在最外側 terraform.tfvars 定義相同名稱打的變數名稱 , 則會直接帶入  
 
 
-```HCL
+
+```hcl
 module "provider" {
   source = "./modules/provider"
 }
@@ -494,9 +492,10 @@ module "security_group" {
 
 
 
+
 ## 結構化目錄參考
 
-會自動載入當前目錄所有 *.tf的檔案
+會自動載入當前目錄所有 \*.tf的檔案
 
 常見為 main.tf, variable.tf, output.tf, provider.tf ....
 
