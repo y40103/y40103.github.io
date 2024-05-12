@@ -9,13 +9,14 @@ toc: true
 toc_label: Index
 ---
 
+## 手動設定Swagger至Web UI
 
 不依賴套件,手動設定Swagger設定檔, 輸出成web頁面
 
 
 至 [swagger](https://github.com/swagger-api/swagger-ui) clone 最新版本, 並將dist資料夾複製到專案中
 
-並將swagger的yaml or json 檔案放到dist資料夾中, 這邊範例檔名為testswagger.yaml
+並將swagger的設定檔 檔案放到dist資料夾中, 這邊範例檔名為testswagger.yaml, 最後需套用該設定檔
 
 ### testswagger.yaml
 
@@ -69,8 +70,9 @@ dist
 └── testswagger.yaml
 ```
 
-需將dist中的swagger設定檔 指向 testswagger.yaml
-dist/swagger-initializer.js
+### dist套用swagger設定檔
+
+需將dist中的swagger-initializer.js中讀取的swagger設定檔指向 testswagger.yaml
 
 ```js
 window.onload = function() {
@@ -98,10 +100,6 @@ window.onload = function() {
 ### 啟動web server
 
 最後啟動一個web server, 並將dist資料夾放到web server中
-
-
-#### Golang
-
 這邊簡單使用golang的http server來啟動web server
 啟動後可透過 http://localhost:8080/docs/ 來訪問Swagger UI
 
