@@ -9,11 +9,16 @@ toc: true
 toc_label: Index
 ---
 
+# oapi-codegen
 
 為Swagger 3.0 config first的 Golang codegen工具, [oapi-codegen](https://github.com/deepmap/oapi-codegen/tree/master)  
 支援 Gin, Echo, Gorilla Mux, Go-HTTP-Router, Goji, Chi, net/http ....  
-主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入形式,response輸出形式...), 只需要開發者專注於handler的實現即可  
-最大的優點是可以保持API文件與程式碼的一致性,讓開發人員只需要專注於API的實現  
+主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入,response輸出的 marshal/unmarshal)
+<br/>
+優點為  
+- 可以保持API文件與程式碼的一致性
+- 節省mashalling/unmashalling的時間
+- 只需要開發者專注於handler的實現
 
 ## 差異
 
@@ -51,7 +56,7 @@ oapi-codegen --package=api dist/openapi_test.yaml > api/gencode.go
 ## 使用範例1
 
 這邊是使用 oapi-codegen的範例, 實做一個最簡單的API Demo  
-oapi-gencode 編寫的swagger文件需依賴Swagger的編輯器才能瀏覽效果, 這邊會新增一個swagger的WebUI來方便瀏覽效果  
+oapi-gencode 編寫的swagger文件需依賴Swagger的編輯器才能瀏覽效果, 這邊會新增一個swagger的WebUI來方便瀏覽效果
 
 
 ### 初始化
@@ -65,12 +70,12 @@ mkdir api
 ## 也是之後gencode的package name, 之後會將生成的程式碼放在這個目錄下
 ```
 
-需先去[swagger](https://github.com/swagger-api/swagger-ui) clone下來, 並將dist資料夾複製到專案的dist資料夾下  
+需先去[swagger](https://github.com/swagger-api/swagger-ui) clone下來, 並將dist資料夾複製到專案的dist資料夾下
 
 
 ### openapi文件
 
-編寫新增 dist/openapi_test.yaml  
+編寫新增 dist/openapi_test.yaml
 
 ```yaml
 openapi: "3.0.0"
@@ -110,7 +115,7 @@ oapi-codegen --package=api dist/openapi_test.yaml > api/gencode.go
 ### 修改swagger dist config目標
 
 需把swagger dist套用的設定檔改成剛剛寫的openapi_test.yaml  
-dist/swagger-initializer.js  
+dist/swagger-initializer.js
 
 ```javascript
 window.onload = function() {
@@ -138,7 +143,7 @@ window.onload = function() {
 
 ### handler
 
-藉由oapi-codegen 生成程式碼(request input,response output), 編寫新增api/impl.go  
+藉由oapi-codegen 生成程式碼(request input,response output), 編寫新增api/impl.go
 
 ```golang
 package api
@@ -171,7 +176,7 @@ func (Server) GetPing(ctx echo.Context) error {
 ### main.go
 
 編寫新增 ./main.go, 實作server端的main函數, 將handler與路由綁定, 啟動server  
-這邊用echo 來演示, 使用不同api框架, 只會在這邊的實作有所不同  
+這邊用echo 來演示, 使用不同api框架, 只會在這邊的實作有所不同
 
 ```golang
 package main
@@ -204,7 +209,7 @@ func main() {
 
 ### 目錄結構
 
-此時目錄結構如下  
+此時目錄結構如下
 
 ```
 minimal_echo/
@@ -243,5 +248,5 @@ go build main.go
 ./main
 ```
 
-此時可訪問 [http://localhost:8080/docs/](http://localhost:8080/docs/) 來瀏覽swagger文檔  
+此時可訪問 [http://localhost:8080/docs/](http://localhost:8080/docs/) 來瀏覽swagger文檔   
 
