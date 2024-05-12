@@ -100,7 +100,7 @@ window.onload = function() {
 
 最後啟動一個web server, 並將dist資料夾放到web server中   
 這邊簡單使用golang的http server來啟動web server   
-啟動後可透過 http://localhost:8080/docs/ 來訪問Swagger UI   
+啟動後可訪問 [http://localhost:8080/docs/](http://localhost:8080/docs/) 來瀏覽swagger文檔   j
 
 ```golang
 package main
