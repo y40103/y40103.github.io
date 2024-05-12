@@ -27,15 +27,11 @@ flowchart TD
 
 ```
 
->> Prometheus 實際上可以理解成一個資料庫, 並可以使用一些PromQL進行查詢   
-Prometheus 獲取資料的方式是藉由發起 HTTP Request 與想監測的資源互動  
-但想監測的資源並不一定會提供 Prometheus 的資料格式接口  
-這邊會需要利用Exporter作為中間人使 prometheus 可以獲取監控目標的資料  
-簡單的說 Exporter 就是一個 HTTP 的API Server, 只是response的格式是符合Prometheus的格式  
-
->> Collector 是 Prometheus 官方定義的一種物件資源, 主要用來將資料源抽象化, 並提供一個統一的介面給Exporter使用  
-> 假設某Exporter 可能需要監控某元件 A,B,C種類型的資料, 這時候就可以使用Collector來將A,B,C的資料抽象化,  
-> 若某些情況只需要A類型資料, 就可以很只調用A的Collector即可, 
+- Prometheus 實際上可以理解成一個資料庫, 並可以使用一些PromQL進行查詢   
+- Prometheus 獲取資料的方式是藉由發起 HTTP Request 與想監測的資源互動,但需監測的資源並不一定會提供 Prometheus 的資料格式接口,這邊會需要利用Exporter作為中間人使 prometheus 可以獲取監控目標的資料  
+- 可以理解Exporter 就是一個 HTTP 的API Server, 只是response的格式是符合Prometheus的格式  
+- Collector 是 Prometheus 官方定義的一種物件資源, 主要用來將資料源抽象化, 並提供一個統一的介面給Exporter使用  
+- 假設某Exporter 可能需要監控某元件 A,B,C種類型的資料, 這時候就可以使用Collector來將A,B,C的資料抽象化, 若某些情況只需要A類型資料, 就可以很只調用A的Collector即可, 
 
 
 ## Exporter 範例
