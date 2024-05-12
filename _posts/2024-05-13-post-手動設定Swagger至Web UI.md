@@ -9,7 +9,6 @@ toc: true
 toc_label: Index
 ---
 
-## 手動設定Swagger至Web UI
 
 不依賴套件,手動設定Swagger設定檔, 輸出成web頁面
 
