@@ -11,14 +11,25 @@ toc_label: Index
 
 # oapi-codegen
 
-為Swagger 3.0 config first的 Golang codegen工具, [oapi-codegen](https://github.com/deepmap/oapi-codegen/tree/master)  
-支援 Gin, Echo, Gorilla Mux, Go-HTTP-Router, Goji, Chi, net/http ....  
-主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入,response輸出的 marshal/unmarshal)
+- 為Swagger 3.0 config first的 Golang codegen工具, [oapi-codegen](https://github.com/deepmap/oapi-codegen/tree/master)  
+- 主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入,response輸出的 marshal/unmarshal)  
 <br/>
 優點為  
 - 可以保持API文件與程式碼的一致性
 - 節省mashalling/unmashalling的時間
 - 只需要開發者專注於handler的實現
+
+## 支援
+
+- Chi
+- Echo
+- Fiber
+- Gin
+- gorilla/mux
+- Iris
+- net/http (Go 1.22+)
+ 
+
 
 ## 差異
 
@@ -70,7 +81,7 @@ mkdir api
 ## 也是之後gencode的package name, 之後會將生成的程式碼放在這個目錄下
 ```
 
-需先去[swagger](https://github.com/swagger-api/swagger-ui) clone下來, 並將dist資料夾複製到專案的dist資料夾下
+需先去[swagger](https://github.com/swagger-api/swagger-ui) clone下來, 並將dist目錄複製到專案目錄下
 
 
 ### openapi文件
