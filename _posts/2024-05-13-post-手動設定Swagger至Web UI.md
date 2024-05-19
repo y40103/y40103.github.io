@@ -119,7 +119,7 @@ func main() {
 	http.HandleFunc("/hello-world", HelloWorld)
 
 	fs := http.FileServer(http.Dir("./dist")) // Swagger UI files handler
-	http.Handle("/docs/", http.StripPrefix("/docs/", fs))
+	http.Handle("/docs/*", http.StripPrefix("/docs/", fs))
 
 	http.ListenAndServe(":8080", nil)
 }
