@@ -114,7 +114,7 @@ e.g. 定義某個user 可以publish message 至特定 SNS topic
 }
 ```
 
-## Fan out
+## SNS + SQS: Fan out
 
 這邊為SQS 與 SNS 的結合 , 透過SNS topic 來發送訊息至多個SQS queue
 
@@ -158,7 +158,7 @@ SNS 也有類似SQS的FIFO queue
 - 吞吐量有限制, 300 msg/s, 3000 msg/s (with batch), 同SQS FIFO
 - 名稱必須 .fifo 結尾
 
-## FanOut
+## SNS FIFO + SQS FIFO: Fan Out
 
 這邊為 SNS FIFO + SQS FIFO 的結合 , 透過SNS FIFO topic 來發送訊息至多個SQS FIFO queue
 
@@ -209,3 +209,5 @@ graph LR
 ## 其他注意事項
 
 - 須注意 SNS TOPIC 的訊息是否加密, 可能會造成訊息無法被送出 (Email .... )
+
+
