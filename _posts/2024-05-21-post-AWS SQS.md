@@ -27,10 +27,9 @@ graph LR
 
 ```
 
-### 基本特性
 
-- producer放入訊息
-- consumer消費訊息  
+- producer: 負責放入訊息
+- consumer: 負責消費訊息  
 
 ## Producing Message
 
