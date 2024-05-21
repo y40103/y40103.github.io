@@ -29,7 +29,8 @@ graph LR
 
 ### 基本特性
 
-用法為 producer放入訊息, consumer消費訊息  
+- producer放入訊息
+- consumer消費訊息  
 
 ## Producing Message
 
