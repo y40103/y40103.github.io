@@ -245,7 +245,6 @@ graph LR
 - 期間有訊息, 就會立即回應
 - 等待時間, 最小為 1s, 最大為 20s
 - 需再queue level 開啟 , 或是在 ReceiveMessage API 中設定 WaitTimeSeconds 參數
--
 
 ### 小結
 
