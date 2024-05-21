@@ -216,7 +216,6 @@ Aws Simple Queue Service, 可以理解成aws的 message queue,
 - 主要是一個兜底的debug機制, 用來追蹤無法被處理的事件
 - 為 FIFO queue
 - DLQ 會被retention機制影響, 需在過期前處理這些無法失敗的訊息 , 否則會被刪除 , 一般來說推薦 retention period 設定為 14 天
--
 
 ```mermaid
 graph LR
