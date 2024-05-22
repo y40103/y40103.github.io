@@ -9,7 +9,7 @@ toc: true
 toc_label: Index
 ---
 
-# oapi-codegen
+Golang Swagger3.0 方案之一  
 
 - 為Swagger 3.0 config first的 Golang codegen工具, [oapi-codegen](https://github.com/deepmap/oapi-codegen/tree/master)  
 - 主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入,response輸出的 marshal/unmarshal)  
