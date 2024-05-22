@@ -11,7 +11,7 @@ toc_label: Index
 mermaid: true
 ---
 
-## FastAPI & Asyncio
+FastAPI 異步比較  
 
 目前實務上支援異步的套件其實真的不多...   
 比較實用的目前覺得有 asyncpg 與 httpx    
