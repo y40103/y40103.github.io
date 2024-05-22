@@ -3,7 +3,9 @@ title: "[筆記] FastAPI & Asyncio"
 categories:
   - 筆記
 tags:
-  - AWS
+  - Python
+  - FastAPI
+  - Asyncio
 toc: true
 toc_label: Index
 mermaid: true
