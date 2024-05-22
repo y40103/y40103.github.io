@@ -199,14 +199,6 @@ async def test_async(url: str):
         return r.status_code
 
 
-async def async_pull_all(urls: List[str]):
-    return await asyncio.gather(*[test_async(url) for url in urls])
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: int, q: str = None):
