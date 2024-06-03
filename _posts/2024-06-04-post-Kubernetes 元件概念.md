@@ -107,6 +107,22 @@ kubernetes 內部抽象化資源
 | Namespace | 用於隔絕資源                           |
 | Node      | 非實際藉由k8s創建, 只是將存在的Node抽象化為k8s的資源 |
 
+### Pod
+
+k8s最小單位, 一個或多個container組成, 並共享網路,文件系統, PID 
+
+### Pod controller
+
+| type                  | description                                |
+|-----------------------|--------------------------------------------|
+| ReplicationController | 確保指定數量的pod副本在運行, 並在pod被刪除後創建新的pod          |
+| ReplicaSet            | 同上,新增selector功能,可更靈活使用label綁定pod           |
+| Deployment            | 同上,新增image update rollback scaling ...     |
+| StatefulSet           | 同上, 但創建刪除皆具有順序性, 且創建的pod 名稱一致, 有穩定的dns     |
+| DaemonSet             | 確保每個node上運行一個pod副本, 並在node加入/離開時創建/刪除pod   |
+| Job                   | 執行一次性任務, 並確保任務完成後pod被刪除, 並可設定重試機制          |
+| CronJob               | 執行定時任務, 並可設定重試機制, 並確保任務完成後pod被刪除           |
+
 ### Service
 
 為 level4 的代理, 為內部Pod提供一個endpoint, 可從內/外部訪問, 並提供負載均衡
@@ -240,6 +256,5 @@ RBAC
 | RoleBinding        | attach role to resource         |
 | ClusterRole        | cluster level role              |
 | ClusterRoleBinding | attach cluster role to resource |
-
 
 
