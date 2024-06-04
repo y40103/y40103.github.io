@@ -8,8 +8,7 @@ toc: true
 toc_label: Index
 mermaid: true
 ---
-
-Pod config 設定
+Pod config 設定  
 
 ## imagePullPolicy
 
@@ -188,8 +187,8 @@ graph LR
 
 這邊實測故意讓 init2失敗 會發現pod會啟動失敗
 
-svc dns default
-`<service name>.<namespace>.svc.<cluster domain name>`
+svc dns default   
+`<service name>.<namespace>.svc.<cluster domain name>`  
 e.g. svc1.dev.svc.cluster.local
 
 ```yaml
@@ -262,7 +261,7 @@ PostStop
 - PostStop 尚未完成, 容器不會被停止, 但若超過grace period, 會被強制停止
 - 適用場景: 釋放資源, 保存狀態, 或者進行清理操作等。
 
-<br/>
+<br/>  
 
 這邊範例為 容器啟動時 執行特定命令,container結束 先停止nginx
 
@@ -302,7 +301,7 @@ postStart.txt
 
 ## Probe
 
-偵測 container是否健康
+偵測 container是否健康   
 若偵測不健康 會自動重啟
 
 - Startup Probe: 只在容器啟動時執行一次, 執行該動作後, 需執行成功 , 啟動後才會變成變成 READY 1/1
@@ -342,7 +341,7 @@ spec:
         periodSeconds: 10         # 每 10 秒探测一次
       startupProbe: # 這邊main container啟動後至少需等待 Delay 5s + sleep 5s, 才會變成READY
         exec:
-          command: ## 測試15s
+          command: ## 測試15s 
             - /bin/sleep
             - "15"
         initialDelaySeconds: 5
@@ -353,7 +352,7 @@ spec:
 
 ```bash
 kubectl get pod -n dev -o wide
-# 啟動後 五秒後才開始啟動probe, 啟動後 sleep 15s , 因此至少需等待 20s, 才會變成READY
+# 啟動後 五秒後才開始啟動probe, 啟動後 sleep 15s , 因此至少需等待 20s, 才會變成READY  
 
 #NAME                READY   STATUS    RESTARTS   AGE   IP            NODE           NOMINATED NODE   READINESS GATES
 #pod-liveness-exec   0/1     Running   0          7s    10.244.1.10   kind-worker2   <none>           <none>
@@ -389,10 +388,10 @@ kubectl get pod -n dev -o wide
 
 ### 調度種類
 
-- 自動調度: 由scheduler自行控制
-- 定向調度: 由 NodeName 或 NodeSelector 決定
-- 親和性調度: 由 NodeAffinity, PodAffinity, PodAntiAffinity 決定
-- 污點(容忍)調度: 由調度的位置污點決定 Taints, Toleration
+- 自動調度: 由scheduler自行控制  
+- 定向調度: 由 NodeName 或 NodeSelector 決定  
+- 親和性調度: 由 NodeAffinity, PodAffinity, PodAntiAffinity 決定  
+- 污點(容忍)調度: 由調度的位置污點決定 Taints, Toleration  
 
 必須為 worker node 才能被調度 , 盡量避免 master
 
@@ -405,7 +404,7 @@ kubectl get nodes -l '!node-role.kubernetes.io/control-plane'
 ```
 ### 自動調度
 
-不用作任何調度設定, scheduler 會自動調度
+不用作任何調度設定, scheduler 會自動調度  
 
 
 
@@ -499,7 +498,7 @@ Affinity Key Operator 參考
       operator: In
       values: [ 'xxxx','yyyy' ]
     - key: nodeenv           #批配label的key為 nodeenv,且value大於 xxx的節點
-      operator: Gt # Gt大於 Lt小於
+      operator: Gt # Gt大於 Lt小於 
       values: 'xxx'
 ```
 
@@ -515,24 +514,24 @@ topologyKey
 - 這個key是指 node的 label key
 - 被調度的node, 皆必須含有該label key 若有三node 其中一個label key不含有該key, 則就不在被選擇的範圍中
 
-使用場景舉例
+使用場景舉例  
 
 - 若有些node有打上 GPU=XXXX, 這樣若設置 topologyKey=GPU, 這樣調度時會只考慮有 GPU key的node, e.g. matchExpression demo=node-test ,topologyKey=GPU, 這樣就會調度至 node label中含有 GPU=OOO 且 demo=node-test 的 node
 
 
 #### nodeAffinity
 
-Node只有親和性, 無反親性
-Node親和性為直接參考Node本身
-注意事項
+Node只有親和性, 無反親性  
+Node親和性為直接參考Node本身  
+注意事項  
+ 
+- 若同時使用 定向 與 親和性 則需兩者同時滿足才會調度  
+- nodeAffinity 若`nodeSelectorTerms`下 有多組 matchExpressions `則滿足一組 就會被調度`  
+- nodeAffinity 若`matchExpressions`下 有多組 key,operator,value `則需滿足所有 才能被調度`  
+- 若調度完後 , label或其他條件產生變化 , 導致條件不符合, 會忽略變化後條件  
+<br/>
 
-- 若同時使用 定向 與 親和性 則需兩者同時滿足才會調度
-- nodeAffinity 若`nodeSelectorTerms`下 有多組 matchExpressions `則滿足一組 就會被調度`
-- nodeAffinity 若`matchExpressions`下 有多組 key,operator,value `則需滿足所有 才能被調度`
-- 若調度完後 , label或其他條件產生變化 , 導致條件不符合, 會忽略變化後條件
-
-
-```YAML
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -549,8 +548,8 @@ spec:
           - matchExpressions: #批配label的key value , 以下list需全滿足
               - key: "kubernetes.io/hostname"
                 operator: In
-                values: [ 'dev-worker2' ] # 不存在則失敗
-      preferredDuringSchedulingIgnoredDuringExecution: # 軟限制 , 即使不滿足也可以創建
+                values: [ 'dev-worker2' ] # 不存在則失敗 
+      preferredDuringSchedulingIgnoredDuringExecution: # 軟限制 , 即使不滿足也可以創建  
         - weight: 1
           preference:
             matchExpressions: # 批配於 label demo2=yyy 的node
@@ -562,22 +561,22 @@ spec:
             matchExpressions: # 批配於 label demo1=xxx 的node
               - key: demo2
                 operator: In
-                values: [ 'xxx' ]
+                values: [ 'xxx' ] 
 ```
 
-以上會被調度至 node label為 `kubernetes.io/hostname=dev-worker2` 的node上,
-實際上並無nodeenv1=yyy與nodeenv2=xxx的node,
-但因為是 軟限制, 因此不滿足也會被創建
+以上會被調度至 node label為 `kubernetes.io/hostname=dev-worker2` 的node上,   
+實際上並無nodeenv1=yyy與nodeenv2=xxx的node,      
+但因為是 軟限制, 因此不滿足也會被創建  
 
 #### podAffinity
 
-Pod有親和性與反親和性
-Pod親和性, 非直接參考該Pod本身, 而是參考該Pod的某個東西, 想跟該Pod某個東西一樣
-e.g. 小明在A教室, 小華參考的是小明的位置 , 因此小華也會去A教室
-e.g 參考A Pod的hostname, 因此B Pod會去同 hostname的地方
+Pod有親和性與反親和性    
+Pod親和性, 非直接參考該Pod本身, 而是參考該Pod的某個東西, 想跟該Pod某個東西一樣    
+e.g. 小明在A教室, 小華參考的是小明的位置 , 因此小華也會去A教室    
+e.g 參考A Pod的hostname, 因此B Pod會去同 hostname的地方  
 
-第一組為被參考Pod
-第二組為PodAffinity範例 會參考第一組Pod的label, 並執行調度
+第一組為被參考Pod   
+第二組為PodAffinity範例 會參考第一組Pod的label, 並執行調度  
 
 ```yaml
 apiVersion: v1
@@ -596,7 +595,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-pod-aff-req
-  namespace: dev
+  namespace: dev 
 spec:
   containers:
     - name: nginx
@@ -608,7 +607,7 @@ spec:
             matchExpressions:
               - key: demo
                 operator: In
-                values: ['node-test']
+                values: ['node-test'] 
           topologyKey: kubernetes.io/hostname
       preferredDuringSchedulingIgnoredDuringExecution: # 軟限制
         - weight: 1
@@ -627,11 +626,11 @@ spec:
                   operator: In
                   values: ['oooo']
             topologyKey: kubernetes.io/hostname
-```
-以上範例會將pod調度至
+``` 
+以上範例會將pod調度至 
 - node label必須有 `kubernetes.io/hostname` 的key 且`必須`有存在 label為 `demo=node-test`的 Pod
 - 其他則為非必須 但盡量滿足 偏好也有 `demo=xxxx` 與 `demo=oooo` 的 pod 也同時存在
-- 當前存在兩個node, dev-worker1 與 dev-worker2, 若創建的參考pod被調度至其中之一, 下面那組就會跟上同一組
+- 當前存在兩個node, dev-worker1 與 dev-worker2, 若創建的參考pod被調度至其中之一, 下面那組就會跟上同一組  
 
 ```bash
 kubectl get pod -n dev -o wide
@@ -643,7 +642,7 @@ kubectl get pod -n dev -o wide
 
 #### podAntiAffinity
 
-反親和性, 簡單說就是滿足該條件的不調度至上面
+反親和性, 簡單說就是滿足該條件的不調度至上面  
 
 ```yaml
 apiVersion: v1
@@ -674,10 +673,10 @@ spec:
           matchExpressions: #批配 參考於某Pod 的 label 為 xxx,yyyy
             - key: kubernetes.io/hostname
               operator: In
-              values: ['node-test']
+              values: ['node-test'] 
         topologyKey: kubernetes.io/hostname
 ```
-以上範例會將 第二個pod創建在與 參考pod不同的node上
+以上範例會將 第二個pod創建在與 參考pod不同的node上  
 
 ```bash
 kubectl get pod -n dev -o wide
@@ -688,29 +687,29 @@ kubectl get pod -n dev -o wide
 
 ### 污點(容忍)調度
 
-能理解成是一種特性, 通常用於全域的情況,
+能理解成是一種特性, 通常用於全域的情況, 
 
-場景舉例:
+場景舉例:   
 - 某機器上有GPU, 可是平常時候希望大部份非需要GPU的資源不要被調度於此機器上, 此時就可以利用taint特性, 某則大部分Pod都需要設定反親和該GPU的策略(用想的就很累), 若有需要gpu的情況, 就可在該Pod上使用tolerence , 忽略排斥GPU的taint,
 - master node 也是一個例子, 天生自帶taint, 並不會有pod被調度至該master
 - 另外就是 CNI e.g. calico or flannel , 每個node都會運行一個CNI, 包含master, 就可以知道 CNI 是用 DaemonSet 進行CNI POD組件的建立, 且有設定 tolerance, 使在master也可以運行 , kubeProxy也是同理
 
-在以上調度方法中, 皆無法把node調度至master, 是因為master預設就擁有taint: NoSchedule
+在以上調度方法中, 皆無法把node調度至master, 是因為master預設就擁有taint: NoSchedule   
 
 
 #### taint
 
 
-主要以node為對象, 給node預標記上 taint effect , 可依 taint effect調度 ,
+主要以node為對象, 給node預標記上 taint effect , 可依 taint effect調度 , 
 
-格式 key=value:effect
+格式 key=value:effect  
 
-taint 可分為
-- PreferNoSchedule: kubernetes將盡量避免調度至該 taint 的 node 上
+taint 可分為  
+- PreferNoSchedule: kubernetes將盡量避免調度至該 taint 的 node 上 
 - NoSchedule: kubernetes將不會把Pod調度具有該taint的node上, 但不影響已存在該Node的Pod
 - NoExecute: kubernetes將不會把Pod調度到具有該taint的node, 且也會把已存在於該Node的Pod撤銷(可設定時間 , 在某個時間內所有Pod需離開該Node)
 
-設置taint
+設置taint  
 
 ```bash
 kubectl taint nodes <node_name> <key>=<value>:<effect>
@@ -725,8 +724,8 @@ kubectl taint nodes <node_name> <key>-
 # 刪除所有 taint
 ```
 
-or use yaml
-e.g.
+or use yaml  
+e.g.  
 ```yaml
 apiVersion: v1
 kind: Node
@@ -742,18 +741,18 @@ spec:
 
 
 測試
-1. 準備一個worker node (僅有一個worker 無其他node)
-2. 設置taint於worker tag:test-taint:PreferNoSchedule 創建pod1 (key為tag, value為 test-taint , 類型為 PreferNoSchedule, )
-3. 修改worker taint為 tag:test-taint:NoSchedule 創建 pod2
-4. 修改worker taint為 tag:test-taint:NoExecute 創建 pod3
-
+1. 準備一個worker node (僅有一個worker 無其他node)  
+2. 設置taint於worker tag:test-taint:PreferNoSchedule 創建pod1 (key為tag, value為 test-taint , 類型為 PreferNoSchedule, )  
+3. 修改worker taint為 tag:test-taint:NoSchedule 創建 pod2  
+4. 修改worker taint為 tag:test-taint:NoExecute 創建 pod3   
+	
 預期結果
 pod1 會創建成功於node1, node2會創建失敗(不斷嘗試重啟), pod3創建失敗, 且pod1,pod2會消失
 
 
 
 ```bash
-kubectl get nodes
+kubectl get nodes 
 #NAME                STATUS   ROLES           AGE    VERSION
 #dev-control-plane   Ready    control-plane   102s   v1.30.0
 #dev-worker          Ready    <none>          82s    v1.30.0
@@ -762,42 +761,42 @@ kubectl get nodes
 
 ```bash
 kubectl taint nodes dev-worker tag=test-taint:PreferNoSchedule
-# 給予 PreferNoSchedule taint
+# 給予 PreferNoSchedule taint 
 # taint格式為 key=value:PreferNoSchedule
 
 kubectl run pod1 --image=nginx:latest -n dev
-# 創建 pod1
-
+# 創建 pod1 
+	
 kubectl get pod -n dev -o wide
 # 驗證 pod 狀態
 # 該taint 可忍受被調度, 但有其他選擇 會以其他為優先
+		
 
-
-
+	
 kubectl taint node dev-worker tag=test-taint:NoSchedule
-# 給予 Noschedule taint
-
+# 給予 Noschedule taint 
+	
 kubectl run pod2 --image=nginx:latest -n dev
 # 創建 pod2
-
+	
 kubectl get pod -n dev -o wide
 # 驗證 pod 狀態
 # 該taint不能被調度, 因此pod2無可選擇的node ,保持pending, 但該node原本就有的pod1 不受影響
 
-
+	
 kubectl taint node dev-worker tag=test-taint:NoExecute
-# 給予 NoExecute taint
-
+# 給予 NoExecute taint 
+	
 kubectl get pod -n dev -o wide
 # 驗證 pod 狀態
-# 該taint 完全不能被調度, 若有已存在的pod, 會被刪除,
-
+# 該taint 完全不能被調度, 若有已存在的pod, 會被刪除, 
+	
 kubectl run pod3 --image=nginx:latest -n dev
 # 創建 pod3 (嘗試再該node創建 但會失敗)
-
+	
 kubectl get pod -n dev -o wide
 # 驗證 pod 狀態 , pod2 , pod3 持續pending 因無可選node
-
+	
 kubectl taint node dev-worker tag:PreferNoSchedule-
 kubectl taint node dev-worker tag:NoSchedule-
 kubectl taint node dev-worker tag:NoExecute-
@@ -827,7 +826,7 @@ tolerations:
 - keys: "key2" # 不考慮value 只要是key2 且 NoSchedule 就可以滿足
   operator: "Exists"
   effect: "NoSchedule"
-- operator: "Exists" # 不考慮key value 所有 Noschedule 都可以滿足
+- operator: "Exists" # 不考慮key value 所有 Noschedule 都可以滿足 
   effect: "NoSchedule"
 - operator: "Exists" # 完全忽略taint, 該Pod可在任何地方被調度
 ```
@@ -837,9 +836,9 @@ kubectl taint nodes <node-name> node-role.kubernetes.io/master:PerferNoSchedule
 # 若有多個master , 建議在master使用 PreferNoSchedule , 可在真的沒資源時, 才使用master
 ```
 
-測試
+測試  
 
-pod-taint.yaml
+pod-taint.yaml  
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -859,14 +858,14 @@ spec:
 
 ```bash
 kubectl taint node dev-worker tag=dev-worker:NoExecute
-# 給予 NoExecute taint
+# 給予 NoExecute taint  
 
 kubectl apply -f pod-taint.yaml
-# 創建 pod-tor
+# 創建 pod-tor 
 
 kubectl get pod -n dev -o wide
 # 驗證 pod 狀態
-# 因pod-taint可以容忍NoExecute 因此可以成功被創建
+# 因pod-taint可以容忍NoExecute 因此可以成功被創建 
 ```
 
 可被調度
