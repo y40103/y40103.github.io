@@ -10,8 +10,6 @@ mermaid: true
 ---
 
 
-# config
-
 kubernetes config物件, 也可作為環境變數注入
 
 - configmap: 可將config注入至deployment or statefulSet
