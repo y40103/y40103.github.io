@@ -91,8 +91,8 @@ root@nginx-busybox:/# ls /var/log/nginx/
 
 ### hostPath
 
-效果類似emptyDir, 只是會將共享的目錄掛載於實際node上, 若Pod被撤銷, 該目錄會被保留下來
-也因scheduler調度不一定會是同一個node(若在不同節點會丟失狀態), 所以不建議使用hostPath, 通常是測試開發時才會使用
+效果類似emptyDir, 只是會將共享的目錄掛載於實際node上, 若Pod被撤銷, 該目錄會被保留下來  
+因scheduler調度不一定會是同一個node(若在不同節點會丟失狀態), 所以不建議使用hostPath, 通常是測試開發時才會使用  
 
 ```yaml
 apiVersion: v1
