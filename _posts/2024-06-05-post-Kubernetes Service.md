@@ -10,9 +10,9 @@ mermaid: true
 ---
 
 
-Service為 kubernetes中的抽象概念, 用於定義一個內/外訪問Pod的方式
-真正起作用的元件為每個Node上的kube-proxy,
-當Service被創立 , apiServer會寫入至etcd Service 資訊 ,
+Service為 kubernetes中的抽象概念, 用於定義一個內/外訪問Pod的方式  
+真正起作用的元件為每個Node上的kube-proxy,  
+當Service被創立, apiServer會寫入至etcd Service 資訊,  
 而kube-proxy會基於監聽機制發現Service的異動, 會把Service中的資訊轉為對應的訪問機制
 
 ```mermaid
