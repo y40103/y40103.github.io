@@ -11,7 +11,7 @@ mermaid: true
 
 近期有機會用到, 把之前的筆記整理上來, 順便review一下
 
-## cluster
+## Cluster
 
 - master node: 維持kubernetes cluster基礎設施的節點, 自帶taint, 任務不會被調度至master上
 - worker node: 工作節點, scheduler會把任務分配至該節點上
@@ -37,7 +37,9 @@ graph LR
     end
 ```
 
-## Node 基礎組件
+## Node
+
+主機節點  
 
 - master node
 - worker node
@@ -76,7 +78,7 @@ graph TD
     worker ---> container-runtime
 ```
 
-## Pod 基礎組件
+## Pod
 
 kubernetes 最小單位
 
@@ -96,7 +98,7 @@ graph LR
     - 文件機制: 內部文件系統共享
     - PID: 內部進程PID皆會相同
 
-## resource
+## Resource
 
 kubernetes 內部抽象化資源
 
@@ -111,7 +113,7 @@ kubernetes 內部抽象化資源
 
 k8s最小單位, 一個或多個container組成, 並共享網路,文件系統, PID 
 
-### Pod controller
+### Pod Controller
 
 | type                  | description                                |
 |-----------------------|--------------------------------------------|
@@ -134,7 +136,7 @@ k8s最小單位, 一個或多個container組成, 並共享網路,文件系統, P
 | LoadBalancer       | 將雲端服務商的load balance 抽象化成 service, 並與pod進行連結                                                      |
 | ExternalName       | 可將外部的url轉成 kubernetes內部的DNS, 同namespace下更可直接使用service name訪問                                     |
 
-- clusterIP
+- ClusterIP
 
 ```mermaid
 graph LR
@@ -191,7 +193,7 @@ graph TD
 - Ingress: 反向代理rule的 抽象化資源, 可理解成config概念
 - Ingress controller: 負責將存在的Ingress資源轉換成對應的rule, 並將rule應用至實際的代理服務, 可理解成web server概念
 
-***Ingress Controller**
+**Ingress Controller為cluster level, ingress 為 namespace level**
 
 ```mermaid
 graph TD
