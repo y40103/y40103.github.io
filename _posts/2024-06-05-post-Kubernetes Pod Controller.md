@@ -8,8 +8,6 @@ toc: true
 toc_label: Index
 mermaid: true
 ---
-i
-
 kubernetes創建Pod的方式  
 
 - 自主式創建: 利用kubernetes直接創建  
@@ -192,7 +190,7 @@ kubectl get rs -n dev -o wide
 #deploy-nginx-f4ff8498c    3         3         3       2m6s   nginx        nginx:1.25.5   app=nginx-pod,app in (nginx-pod),pod-template-hash=f4ff8498c
 ```
 
-## rollback
+### rollback
 
 | rollout command | content                                 |
 |-----------------|-----------------------------------------|
@@ -229,7 +227,7 @@ kubectl rollout history deploy -n dev
 #4         Initial deploy of nginx1.22
 ```
 
-### DaemonSet
+## DaemonSet
 
 Node等級的控制器 ,用於保證所有Node都會運行一個特定Pod, 一般用於日誌收集或Node監控之類。 若每個Node都需要特定服務,
 每個Node都只需要一個, 這類Pod就適合使用DaemonSet類型
@@ -293,7 +291,7 @@ kubectl get pod -n dev -o wide
 #daemon-nginx-vt6gl   1/1     Running   0          33s   10.244.2.4   dev-worker2   <none>           <none>
 ```
 
-### Job
+## Job
 
 用於批量執行一次性任務 (一次同時處理指定數量任務 每個任務只執行一次)
 
@@ -336,7 +334,7 @@ kubectl get pod -n dev -o wide
 #job-busybox-nq9sj   0/1     Completed   0          34s   10.244.1.4   dev-worker    <none>           <none>
 ```
 
-### cronjob
+## cronjob
 
 用於週期性執行任務
 
@@ -429,7 +427,7 @@ kubectl get pod -n dev -o wide
 #cronjob-busybox-28613413-kwcjp   1/1     Running     0          3s     10.244.2.9   dev-worker2   <none>           <none>
 ```
 
-### StatefulSet
+## StatefulSet
 
 為了解決有狀態的service的問題 (對應 deployment 與 replicationSet 為無狀態設計) , 應用場景
 
@@ -526,8 +524,5 @@ nslookup stateful-nginx-2.svc-nginx.dev.svc.cluster.local 10.244.0.2
 #Name:   stateful-nginx-2.svc-nginx.dev.svc.cluster.local
 #Address: 10.244.1.3
 ```
-
-
-
 
 
