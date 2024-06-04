@@ -8,7 +8,7 @@ toc: true
 toc_label: Index
 mermaid: true
 ---
-kubernetes Pod資料持久化, 這邊舉目前比較有機會用到的方式  
+kubernetes Pod資料持久化, 這邊舉目前比較有機會用到的方式
 
 - volume
   - emptyDir
@@ -20,19 +20,19 @@ kubernetes Pod資料持久化, 這邊舉目前比較有機會用到的方式
 
 ## volume
 
-類似docker volume 機制, 可以將容器內外目錄共享  
+類似docker volume 機制, 可以將容器內外目錄共享
 
 ### emptyDir
 
 該類型目的為將pod內部的container目錄共享, 無持久化功能(該目錄不會被掛載至node上), 容器被撤銷時, 資料也會被刪除
-EmptyDir會在Pod被分配到Node時被創建, 初始為空, 無須指定volume的目錄,   
+EmptyDir會在Pod被分配到Node時被創建, 初始為空, 無須指定volume的目錄,
 kubernetes會自動分配一個目錄, Pod被刪除時, EmptyDir也會永久被刪除  (若執行中 Pod崩潰重啟, mptyDir資料不會受到影響,
-只有刪除pod時 emptyDir的資料才會丟失 )   
+只有刪除pod時 emptyDir的資料才會丟失 )
 <br/>
-適用場景  
+適用場景
 
-- 臨時空間  
-- container與container之間需要交換數據時 (共享目錄)  
+- 臨時空間
+- container與container之間需要交換數據時 (共享目錄)
 
 ```yaml
 apiVersion: v1
@@ -64,10 +64,10 @@ spec:
       emptyDir: { } # volume 類型
 ```
 
-測試  
-在busybox /log/ 可以看到nginx /var/log/nginx/ 的檔案    
-在busybox 創建檔案, 可以在nginx /var/log/nginx/下看到   
-可以理解兩者目錄共享  
+測試
+在busybox /log/ 可以看到nginx /var/log/nginx/ 的檔案
+在busybox 創建檔案, 可以在nginx /var/log/nginx/下看到
+可以理解兩者目錄共享
 
 ```bash
 kubectl exec -it nginx-busybox -n dev -c nginx  --  bash
@@ -91,8 +91,8 @@ root@nginx-busybox:/# ls /var/log/nginx/
 
 ### hostPath
 
-效果類似emptyDir, 只是會將共享的目錄掛載於實際node上, 若Pod被撤銷, 該目錄會被保留下來  
-也因scheduler調度不一定會是同一個node, 因此會與網路磁碟或是分布式的存儲工具一起使用  
+效果類似emptyDir, 只是會將共享的目錄掛載於實際node上, 若Pod被撤銷, 該目錄會被保留下來
+也因scheduler調度不一定會是同一個node(若在不同節點會丟失狀態), 所以不建議使用hostPath, 通常是測試開發時才會使用
 
 ```yaml
 apiVersion: v1
@@ -133,7 +133,7 @@ spec:
 ```
 
 
-測試  
+測試
 ```bash
 root@dev-worker:/# ls /tmp/hostpath_temp/
 access.log  error.log
@@ -141,7 +141,7 @@ access.log  error.log
 
 ### NFS
 
-Pod中共享目錄, 且目錄掛載於NFS   
+Pod中共享目錄, 且目錄掛載於NFS
 
 ```yaml
 apiVersion: v1
@@ -167,7 +167,7 @@ spec:
       volumeMounts:
         - name: logs-volume  #將 /logs 掛載至 logs-volume
           mountPath: /log/
-	
+
   volumes: # 聲明volume
   - name: logs-volume # 定義 logs-volume
     nfs:
@@ -188,7 +188,7 @@ apt-get install nfs-kernel-server nfs-common
 	# 安裝nfs
 
 
-# 包含 nfs server and work node 
+# 包含 nfs server and work node
 
 
 mkdir /home/nfsVolume/ -p
@@ -207,10 +207,10 @@ vim /etc/exports
 
 ```bash
 sudo systemctl start nfs
-	
+
 # or
 sudo systemctl start nfs-kernel-server
-	
+
 ```
 
 
@@ -218,11 +218,11 @@ sudo systemctl start nfs-kernel-server
 
 ## Persistent Volume
 
-volume抽象化物件管理, 簡單說就是把可以掛載至pod的目錄抽象化成kubernetes的物件, 可以被kubernetes管理    
+volume抽象化物件管理, 簡單說就是把可以掛載至pod的目錄抽象化成kubernetes的物件, 可以被kubernetes管理
 
 ### PV
 
-PV = 被抽象化的資源名稱, 支援多種不同的類型  
+PV = 被抽象化的資源名稱, 支援多種不同的類型
 
 - hostPath
 - nfs
@@ -241,10 +241,10 @@ kind: PersistentVolume
 metadata:
   name: pv2
 spec:
-  capacity: # 儲存能力 
+  capacity: # 儲存能力
     stroage: 20Gi
   accessModes: #訪問模式
-# ReadWriteOnce(RWO) 讀寫權限,同時只能被單個node掛載 
+# ReadWriteOnce(RWO) 讀寫權限,同時只能被單個node掛載
 # ReadOnlyMany (ROX) 只讀權限,可被多個node掛載
 # ReadWriteMany (RWX) 讀寫權限,可被多個node掛載
 # 不同類型的儲存模式(nfs等等...) 可用的類型可能會不同
@@ -319,11 +319,11 @@ cephfs
 
 #### Release復原
 
-若被PVC綁定, 但後來PVC被刪除, PV STATUS會轉為release    
-此時會被鎖定, 若有其他PVC有資格綁定該PV, 會無法綁定    
-要回復狀態為 Available  
+若被PVC綁定, 但後來PVC被刪除, PV STATUS會轉為release
+此時會被鎖定, 若有其他PVC有資格綁定該PV, 會無法綁定
+要回復狀態為 Available
 
-可使用edit 或是 patch , 刪除 `claimRef` 的內容 ,　就可回到Available  
+可使用edit 或是 patch , 刪除 `claimRef` 的內容 ,　就可回到Available
 ```yaml
 kubectl edit pv hostpath-pv -n dev
 ```
@@ -331,8 +331,8 @@ kubectl edit pv hostpath-pv -n dev
 ### PVC
 
 
-PVC 可以理解成PV的 consumer, 需要先定義PVC 中PV需求, 當PVC被創建時, 會嘗試去綁定適合的PV    
-PVC可分 `靜態` 與 `動態` , 動態可設置storageClass, 可使PVC自行創建適合的PV去綁定    
+PVC 可以理解成PV的 consumer, 需要先定義PVC 中PV需求, 當PVC被創建時, 會嘗試去綁定適合的PV
+PVC可分 `靜態` 與 `動態` , 動態可設置storageClass, 可使PVC自行創建適合的PV去綁定
 
 
 ```yaml
@@ -389,5 +389,5 @@ spec:
 
 
 
- 
+
 
