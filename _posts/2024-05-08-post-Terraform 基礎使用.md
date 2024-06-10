@@ -9,7 +9,7 @@ toc: true
 toc_label: Index
 ---
 
-雲端版的基礎設施佈署工具,配合ansible使用可滿足大多基礎需求  
+雲端版的基礎設施佈署工具  
 
 
 ## 初始化
@@ -518,7 +518,6 @@ module "security_group" {
        │   ├── main.tf
        │   ├── output.tf
        │   └── variable.tf
-       ├── vpc
        ├── vpc_env
        │   ├── main.tf
        │   ├── output.tf
