@@ -245,20 +245,20 @@ kubectl get pod -n dev -o wide
 # pod-base   0/1     Init:1/2   0          4s    10.244.1.8   kind-worker2   <none>           <none>
 ```
 
-### PostStart PostStop
+### postStart preStop
 
 為main container提供生命週期的hook, 這些hook可以在main container啟動完成後 或是 準備結束前 被trigger
 
-PostStart
+postStart
 
 - 啟動後立即觸發。
-- PostStart 的執行不會影響容器的正常啟動流程，即使 PostStart 中的命令尚未執行完成，容器也會繼續其初始化程序。
+- postStart 的執行不會影響容器的正常啟動流程，即使 postStart 中的命令尚未執行完成，容器也會繼續其初始化程序。
 - 適用場景: 初始化應用程序，配置環境，或者進行資源訪問等。
 
-PostStop
+preStop
 
 - 停止之前觸發
-- PostStop 尚未完成, 容器不會被停止, 但若超過grace period, 會被強制停止
+- PreStop 尚未完成, 容器不會被停止, 但若超過grace period, 會被強制停止
 - 適用場景: 釋放資源, 保存狀態, 或者進行清理操作等。
 
 <br/>  
