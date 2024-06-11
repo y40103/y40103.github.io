@@ -18,6 +18,26 @@ image pull policy
 - IfNotPresent: local repository 存在, 就使用 local repository, 不存在則從 remote repository 取得 image
 - Never: 只使用local repository 取得 image
 
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: dev
+spec:
+  containers:
+    - image: nginx:latest
+      imagePullPolicy: IfNotPresent
+      name: pod
+      ports:
+        - name: nginx-port
+          containerPort: 80
+          protocol: TCP
+```
+
+
+
 ## command
 
 用於Pod初始化後 執行的一個命令
