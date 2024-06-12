@@ -43,7 +43,9 @@ server負責UI & 發布flow-run(可以理解成 待辦事項)
 ```
 command: ["prefect", "worker","start", "--pool","worker-pool","--type","kubernetes"]
 ```
-需指定的話, 可設定  `base job template`, 若不設定會使用預設image e.g. `docker.io/prefecthq/prefect:2-latest`
+需指定的話, 可設定  `base job template`, 若不設定會使用預設image e.g. `docker.io/prefecthq/prefect:2-latest`  
+
+以下yaml來自Web UI , 可參考 worker-pool edit   
 
 ```yaml
 {
