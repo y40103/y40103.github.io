@@ -10,10 +10,6 @@ toc_label: Index
 mermaid: true
 ---
 
-紀錄一下工作模式, 概念上就是啟動一個server 與多個worker  
-server負責UI發布flow-run(可以理解成 待辦事項)  
-時間到後, worker會讀取flow-run, 完成這些事項    
-
 優點為 worker為由 scheduler調度, 不用自己管理運算資源  
 
 ```mermaid
@@ -35,7 +31,8 @@ graph LR
 
 ### Prefect-Server
 
-基本上跟單節點相同,只負責UI顯示與持續發布flow  
+server負責UI & 發布flow-run(可以理解成 待辦事項)   
+時間到後, worker會讀取flow-run, 完成這些事項    
 
 ### Kubernetes-worker
 
