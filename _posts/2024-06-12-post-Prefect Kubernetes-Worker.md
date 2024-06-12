@@ -116,12 +116,14 @@ command: ["prefect", "worker","start", "--pool","worker-pool","--type","kubernet
 ```
 ### deploy
 
-佈署任務, 這邊會需要flow的程式目錄 與 deploy的yaml(prefect.yaml) 
-概念上就是 程式與yaml file 可以發布 一組排程(prefect-deployment)給 prefect-server, 他之後就會定期創建 k8s-job (prefect-flow-run) 
-flow-run時間到後被trigger後, 對應的kubernetes-worker 會解析flow-run的工作設定, 若有重複設定 會以flow-run的為優先覆蓋
-flow-run設定包含image,jobname ....
+佈署任務, 這邊會需要flow的程式目錄 與 deploy的yaml(prefect.yaml)   
+概念上就是 程式與yaml file 可以發布 一組排程(prefect-deployment)給 prefect-server,  
+他之後就會定期創建 k8s-job (prefect-flow-run)   
+flow-run時間到被trigger後, 對應的kubernetes-worker 會解析flow-run的工作設定, 開始完成  
+若有重複設定 會以flow-run的為優先覆蓋  
+flow-run設定包含image,jobname ....  
 
-prefect.yaml  job_variables的內容就會覆蓋worker-poo原本的設定  
+prefect.yaml  job_variables的內容就會覆蓋worker-poo原本的設定    
 ```yaml
 deployments:
 - name: demo
@@ -150,7 +152,8 @@ deployments:
 
 ### prefect worker config
 
-這邊就是啟動worker. 之後推送任務  , 使server可以開始排程  
+這邊就是啟動worker. 之後推送任務   
+使server可以開始排程    
 
 ```bash
 apiVersion: apps/v1
