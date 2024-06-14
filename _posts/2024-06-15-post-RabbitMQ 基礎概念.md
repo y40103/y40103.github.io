@@ -1,5 +1,5 @@
 ---
-title: "[筆記]RabbitMQ 基本概念"
+title: "[筆記] RabbitMQ 基本概念"
 categories:
   - 筆記
 tags:
