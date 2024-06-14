@@ -209,3 +209,5 @@ graph LR
     queue_Apple.Juice -->|polling| Consumer1
     queue_Orange.Cool.Guy -->|polling| Consumer2
     queue_Lemon.Cool.Guy -->|polling| Consumer3
+
+```
