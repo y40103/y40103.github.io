@@ -100,7 +100,7 @@ metadata:
 
 驗證該身份可以做哪些事
 
-## RBAC
+### RBAC
 
 Role-Based-Access Control, 基於角色進行權限控制
 
@@ -110,7 +110,7 @@ Role-Based-Access Control, 基於角色進行權限控制
 - Group
 - ServiceAccount
 
-### apiGroups Resources Verbs 參考
+#### apiGroups Resources Verbs 參考
 
 常用資源對照
 
@@ -152,7 +152,7 @@ kubectl api-resources --api-group=apps
 #statefulsets          sts          apps/v1      true         StatefulSet
 ```
 
-### Role
+#### Role
 
 namespace level, 用於定義針對 namespace level 特定resource(Pods,Services,ConfigMap...) 的權限控制
 
@@ -170,7 +170,7 @@ rules:
     verbs: [ "get", "list", "watch", "create","delete","patch" ]
 ```
 
-### clusterRole
+#### clusterRole
 
 cluster level, 用於定義針對 cluster level 特定resource(Pods,Services,ConfigMap...) 的權限控制
 
@@ -188,7 +188,7 @@ rules:
     verbs: [ "get", "list", "watch", "create","delete","patch" ]
 ```
 
-### RoleBinding & ClusterRoleBinding
+#### RoleBinding & ClusterRoleBinding
 
 RoleBinding與ClusterRoleBinding的設定方式相同, 只是RoleBinding是針對namespace, ClusterRoleBinding是針對cluster
 
@@ -208,6 +208,7 @@ Binding kind apiGroup 對照表
 
 
 設定檔範例
+
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -236,7 +237,7 @@ roleRef:
 ```
 
 
-#### 實際範例
+實際範例
 
 這邊為某pod, 可以get,watch,list,create,delete,patch 所有jobs,namespaces,pods,pods/log
 
