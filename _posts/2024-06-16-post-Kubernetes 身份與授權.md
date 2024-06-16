@@ -77,22 +77,24 @@ metadata:
 
 - 實做待補充 ...
 
-紀錄一下概念
-這邊User Account 實際上就是在創建一個合法的~/.kube/config檔案
-這檔案實際上就是一個auth文件, kubectl交互就是依賴它表明身份並跟哪個cluster交互
-可以理解成一個client端的auth文件
+紀錄一下概念  
+這邊User Account 實際上就是在創建一個合法的~/.kube/config檔案   
+<br>
+這檔案實際上就是一個auth文件,  
+kubectl交互就是依賴它表明身份並跟哪個cluster交互  
+可以理解成一個client端的auth文件  
 <br/>
-這邊創建User是同HTTPS身份驗證的概念,
-作法上是創建一個私鑰 key , 並創建一個CSR,
-使用kubernetes的CA 自簽憑證
-有該憑證與key , 可以使用kubectl 創建一個User 並設置 credentials (實際上就是幫你在~/.kube/config中新增user)
-創建該user後, 就可以使用context 來切換使用者身份
+這邊創建User是同HTTPS身份驗證的概念,  
+作法上是創建一個私鑰 key , 並創建一個CSR,  
+使用kubernetes的CA 自簽憑證  
+有該憑證與key , 可以使用kubectl 創建一個User 並設置 credentials (實際上就是幫你在~/.kube/config中新增user)  
+創建該user後, 就可以使用context 來切換使用者身份  
 <br/>
-設置權限的部份
-剛創建的user 是無任何權限的, 添加權限的方式是同service account,  使用RBAC,
-透過創建Role, ClusterRole, RoleBinding, ClusterRoleBinding  來設置權限
+設置權限的部份  
+剛創建的user 是無任何權限的, 添加權限的方式是同service account,  使用RBAC,  
+透過創建Role, ClusterRole, RoleBinding, ClusterRoleBinding  來設置權限  
 <br/>
-透過User account, 可以達成在隨意的server只要有kubectl,只要~/.kube/config 有授權, 透過切換context, 轉換不同身份與多個k8s的cluster進行交互
+透過User account, 可以達成在隨意的server只要有kubectl,只要~/.kube/config 有授權, 透過切換context, 轉換不同身份與多個k8s的cluster進行交互  
 
 
 
