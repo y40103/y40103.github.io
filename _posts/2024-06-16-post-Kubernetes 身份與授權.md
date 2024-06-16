@@ -190,8 +190,8 @@ rules:
 
 RoleBinding與ClusterRoleBinding的設定方式相同, 只是RoleBinding是針對namespace, ClusterRoleBinding是針對cluster
 
-subjects: 主詞, 可以是User, Group, ServiceAccount , group待釐清 ,,,
-roleRef: 綁定哪個Role or  ClusterRole
+- subjects: 主詞, 可以是User, Group, ServiceAccount , group待釐清 ,,,   
+- roleRef: 綁定哪個Role or  ClusterRole   
 
 
 Binding kind apiGroup 對照表
