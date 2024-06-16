@@ -75,13 +75,10 @@ metadata:
 
 用於kubectl與API server進行交互時的身份驗證
 
-- 實做待補充 ...
-
 紀錄一下概念    
 簡單的理解就是用 k8s ca 自簽一個憑證, 該憑證可以作為一個身份跟apiserver交互  
 <br>
-~/.kube/config   
-kubectl交互就是依賴它表明身份並跟哪個cluster交互  
+kubectl交互就是依賴~/.kube/config 表明身份並跟哪個cluster交互  
 可以理解成一個client端的auth文件    
 <br/>
 這邊創建User是同HTTPS身份驗證的概念,  
@@ -95,7 +92,7 @@ kubectl交互就是依賴它表明身份並跟哪個cluster交互
 透過創建Role, ClusterRole, RoleBinding, ClusterRoleBinding  來設置權限  
 <br/>
 透過User account, 可以達成在隨意的server只要有kubectl,只要~/.kube/config 有授權, 透過切換context, 轉換不同身份與多個k8s的cluster進行交互  
-
+待補充實做   
 
 
 ## Authorization
