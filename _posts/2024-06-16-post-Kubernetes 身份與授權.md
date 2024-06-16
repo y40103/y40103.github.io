@@ -41,6 +41,7 @@ kubectl get sa
 #default   0         24h
 ```
 
+參考field  
 ```yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -58,6 +59,17 @@ imagePullSecrets:
   - name: my-registry-key
 automountServiceAccountToken: true # 自動掛載token
 ```
+
+實際範例
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-ac
+  namespace: dev
+```
+
 
 ### User Account
 
