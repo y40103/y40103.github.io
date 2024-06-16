@@ -12,8 +12,8 @@ mermaid: true
 鑒權基本上分為身份驗證(authentication)與授權(authorization)
 
 - authentication:
-    - user account
     - service account
+    - user account
 - authorization:
     - RBAC
         - Role
