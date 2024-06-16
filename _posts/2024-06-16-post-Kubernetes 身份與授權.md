@@ -112,7 +112,6 @@ Role-Based-Access Control, 基於角色進行權限控制
 - Group
 - ServiceAccount
 
-#### apiGroups Resources Verbs 參考
 
 常用資源對照
 
