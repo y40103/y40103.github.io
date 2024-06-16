@@ -77,12 +77,12 @@ metadata:
 
 - 實做待補充 ...
 
-紀錄一下概念  
-這邊User Account 實際上就是在創建一個合法的~/.kube/config檔案   
+紀錄一下概念    
+簡單的理解就是用 k8s ca 自簽一個憑證, 該憑證可以作為一個身份跟apiserver交互  
 <br>
-這檔案實際上就是一個auth文件,  
+~/.kube/config   
 kubectl交互就是依賴它表明身份並跟哪個cluster交互  
-可以理解成一個client端的auth文件  
+可以理解成一個client端的auth文件    
 <br/>
 這邊創建User是同HTTPS身份驗證的概念,  
 作法上是創建一個私鑰 key , 並創建一個CSR,  
