@@ -1,5 +1,5 @@
 ---
-title: "[Issue紀錄] gunicorn + sqlalchemy connection pool error"
+title: "[Issue紀錄] Gunicorn + Sqlalchemy connection pool error"
 categories:
   - Issue紀錄
 tags:
