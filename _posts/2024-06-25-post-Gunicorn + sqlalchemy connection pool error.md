@@ -34,8 +34,8 @@ engine = create_engine(url, connect_args={'options': '-csearch_path={}'.format(s
 
 ### preload
 
-但實在不想犧牲性能, 又再仔細研究一下機制  
-還跟web server有一些關係  
+不太想犧牲性能, 又仔細研究一下機制  
+發現跟web server有一些關係  
 該專案是使用 gunicorn  
 gunicorn 啟動時會調用多個uvicorn作為worker  
 每個worker都是使用獨立的pool, 理論上應該不太會有共用的問題  
