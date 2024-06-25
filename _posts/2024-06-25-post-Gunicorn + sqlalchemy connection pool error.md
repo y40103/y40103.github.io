@@ -1,7 +1,7 @@
 ---
 title: "[Issue紀錄] gunicorn + sqlalchemy connection pool error"
 categories:
-  - 筆記
+  - Issue紀錄
 tags:
   - Python
 toc: true
