@@ -9,7 +9,7 @@ toc_label: Index
 mermaid: true
 ---
 
-使用casbin會相依sqlalchemy, 但API server啟動一段時間後, API authorization會有機會返回500, 但非每次都會     
+casbin相依sqlalchemy, API server啟動一段時間後, authorization會有機會返回500, 但非每次都會     
 查看log, 發現是sqlalchemy產生的error    
 
 ```
