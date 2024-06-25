@@ -10,7 +10,7 @@ mermaid: true
 ---
 
 
-查看一下資料 比較流行的套件  
+查看比較主流的套件  
 
 - ntpdate 準備棄用  
 - ntpd
