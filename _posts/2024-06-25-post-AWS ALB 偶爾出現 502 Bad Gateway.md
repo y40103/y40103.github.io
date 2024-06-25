@@ -1,5 +1,5 @@
 ---
-title: "[Issue紀錄] "AWS ALB 偶爾出現 502 Bad Gateway
+title: "[Issue紀錄] "AWS ALB 偶爾出現 502 Bad Gateway"
 categories:
   - Issue紀錄
 tags:
