@@ -50,7 +50,7 @@ gunicorn 啟動時會調用多個uvicorn作為worker
 有機會會拿到正在使用的connection     
 或是使用到已經被丟棄的connection  
 因此使用--preload, 會需要確定業務場景會不會有race condition的狀況  
-取消後, 就可以正常使用 worker pool
+取消後, 就可以正常使用 connection pool
 
 ```bash
 /usr/local/bin/gunicorn __init__:app --reload --workers 8 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --keep-alive 65
