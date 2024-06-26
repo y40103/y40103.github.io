@@ -41,7 +41,7 @@ gunicorn 啟動時會調用多個uvicorn作為worker
 每個worker都是使用獨立的pool, 理論上應該不太會有共用的問題  
 該專案 gunicorn 啟動方式  
 ```bash
-/usr/local/bin/gunicorn __init__:app --reload --workers 8 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --keep-alive 65
+/usr/local/bin/gunicorn __init__:app --reload --preload --workers 8 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --keep-alive 65
 ```
 關鍵在於 --preload, 這樣在啟動worker時 會從當前的主worker fork出去  
 所有worker會使用主worker的記憶體,只有遇到需要寫入時,才會copy一份記憶體出去 原美意是可以節省資源  
