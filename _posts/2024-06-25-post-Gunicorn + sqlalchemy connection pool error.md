@@ -1,7 +1,7 @@
 ---
-title: "[Issue紀錄] Gunicorn + Sqlalchemy connection pool error"
+title: "[隨筆] Gunicorn + Sqlalchemy connection pool error"
 categories:
-  - Issue紀錄
+  - 隨筆
 tags:
   - Python
 toc: true
