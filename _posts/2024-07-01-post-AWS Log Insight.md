@@ -62,7 +62,7 @@ group by dstPort, arcAddr, dstAddr
 order by HitCount desc limit 1
 ```
 
-output 結果大概會是以下
+output 結果大概會是以下   
 
 | dstPort | srcAddr    | dstAddr        | records |
 |---------|------------|----------------|---------|
@@ -90,12 +90,12 @@ output 結果大概會是以下
 
 ### 範例
 
-本機直連ec2 ssh log
+本機直連ec2 ssh log  
 
-FROM: 61.216.156.141 , ephemeral=51204
-TO: 10.0.1.41 port=22
+- FROM: 61.216.156.141 , ephemeral=51204
+- TO: 10.0.1.41 port=22
 
-request
+request  
 
 ```
 fields @timestamp, @message
@@ -112,10 +112,10 @@ fields @timestamp, @message
 
 
 
-TO: 10.0.1.41 port=22
-FROM: 61.216.156.141 , ephemeral=51204
+- TO: 10.0.1.41 port=22
+- FROM: 61.216.156.141 , ephemeral=51204
 
-response
+response  
 
 ```
 fields @timestamp, @message
