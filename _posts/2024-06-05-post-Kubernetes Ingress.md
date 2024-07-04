@@ -24,52 +24,48 @@ graph LR
     A <-->|Add reverse proxy rule| B["Ingress"]
 ```
 
-## Ingress
-
-- kubernetes的反向代理設定檔的抽象化物件, 用來定義流量如何反向代理至特定pod
-- 無論使用哪種ingress controller, ingress設定檔都 相同, 並且不會因為ingress controller的不同而有所改變
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  namespace: dev
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: "test.com"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: nginx
-            port:
-              number: 80
-
-  - host: "test2.com"
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: info
-            port:
-              number: 8010
-```
-
 
 ## Ingress Controller
 
 - 實際上可以理解為kubernetes的web server, 但只負責處理反向代理的部份, 並且將流量導向到對應的pod上
 - 工作方式就是監聽流量進行反向代理至Pod, 並將新發現的ingress 轉換成反向代理的rule 套用, 並reload
 - 非kubernetes內建的元件, 需要自行佈署
-- 有多種架構方案與不同類型的ingress controller
+- cluster 層級, 無關namespace  
+- 有不同類型的ingress controller (nginx,haproxy,apache...)
+- port 8443 ingress-nginx admission controller
+- port 80 / 443
+- 分為 雲端load balance 與 baremetal本地 佈署
+
+
+這邊舉例 controller以 nginx 類型為主  
+
+### 類型
+
+- cloud provider: 這部份是結合cloud provider提供的服務, 簡單說是把雲端上的load balancer抽象化成 service(load-balancer), 該service就是 ingress controller的入口
+
+
+```mermaid
+graph LR
+  client ---> A["cloud load-balancer"]
+  A --- B["Service(load-balancer)"] ---> Pod
+```
+
+- baremetal
+
+[參考](https://kubernetes.github.io/ingress-nginx/deploy/baremetal/)
+
+```mermaid
+graph LR
+  client ---> A["?"]
+  A --- B["Service"] ---> Pod
+```
+
+- Metallb
+  - layer2: 通過ARP來宣告IP, 僅限於本地網路 (無法直接從外部訪問)
+  - BGP: 用於大規模跨網段佈署, 路由器需支援BGP, 常用於異地數據中心, 混合雲環境
+
+- NodePort: 將NodePort Service 綁定特定ingress rule,
+- Via the host network: 類似一般nginx用法, 直接代理至 service
 
 
 ### Config簡介
@@ -100,96 +96,79 @@ controller需自行佈署, 這邊簡單解析一下佈署的config
   - ingress-nginx-admission-create: 創建webhook 憑證
   - ingress-nginx-admission-patch: 更新webhook 憑證
 - ingressClass: 定義該該ingress的名稱 與ingress的類型是由哪個ingress controller處理 , 如為 controller: k8s.io/ingress-nginx, 此外若要啟動多個controller,也是metadata的name 可將controller做區分
-- ValidatingWebhookConfiguration:
-
-### 常見方案
-
-ingress controller 有多種方案, 舉一些目前可能會使用到的
-
-- cloud provider: 這部份是結合cloud provider提供的服務, 簡單說是把雲端上的load balancer抽象化成 service(load-balancer), 該service就是 ingress controller的入口
-- bare metal: 這邊是直接設置service(NodePort)作為ingress controller的入口, 透過nodePort將流量導向到ingress controller, 但由於nodePort expose的port範圍為30000-32767, 這邊會需要手動特別設置iptable之類的設置, 在每一個節點將 80 or 443 的流量 導向到ingress controller的nodePort上
-- bare metal+MetalLb:
-  - MetalLB: 這東西簡單說就是可以設定一個ip range, 之後若在本地端設置 load-balancer的service, 就會自動從該range分配一組ip給該service, 可以理解讓本地可以使用load balancer service的一個手段
-  - 若將metalLb的load balance service 取代 bare metal 的 nodePort service , 似乎可以省略每個節點都需要另外設定iptable設定
-
-且除了有不同的方案之外, 也可自行選擇 ingress controller種類 e.g. nginx, traefik, haproxy...等等
-可針對需求自行佈署相對應的ingress controller
 
 
+## Ingress
 
-### bare metal
+- kubernetes的反向代理設定檔的抽象化物件, 用來定義流量如何反向代理至特定pod
+- 無論使用哪種ingress controller, ingress設定檔都 相同, 並且不會因為ingress controller的不同而有所改變
+- ingressClass 是標記該controller是哪種web server type, controller的pod 是藉由--arg 相依
+- Ingress 的rule 是藉由 ingressClass 標記 注入rule至 controller
 
-實體機 Ingress Controller 佈署
+config, 主要是由 `test2.com` 可被導向 名為 `info`service後的pod的8010
 
-- ingress: 定義反向代理的rule
-- ingress controller: 負責將ingress的rule轉為config 進行反向代理
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: dev
+spec:
+  ingressClassName: nginx  ## 這邊是表示使用哪個ingress controller
+  rules:
+  - host: "test2.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: info
+            port:
+              number: 8010
+```
 
-以下用nginx做對比
+ingress controller config宣告 `ingressClassName` 位置
 
-| ingress元件          | Nginx元件                  |
-|--------------------|--------------------------|
-| ingress controller | Nginx Server             |
-| ingress            | /etc/nginx/conf.d/*.conf |
-| IngressClass       | 表示WebServer的種類 , nginx   |
+```yaml
+    spec:
+      containers:
+      - args:
+        - /nginx-ingress-controller
+        - --election-id=ingress-nginx-leader
+        - --controller-class=k8s.io/ingress-nginx
+        - --ingress-class=nginx   <<<<<<<<<<<<<<<<<<<<<<<<<<<<< 這個地方
+        - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --validating-webhook=:8443
+```
 
-當ingress controller存在, 若創建ingress, controller會偵測ingress,並將rule建立至controller中
 
-#### 測試Pod
+## 實際測試
 
-兩組clusterIP對應兩組 app, 80 and 8010 port
+### 共用config
+
+
+demo app port 8010, 由clusterIP service, satefulset 組成  
+該app 為 api, 會回傳創建時產生的uuid  
 
 ```yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: nginx
-  namespace: dev
-spec:
-  serviceName: "nginx"
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:latest
-          ports:
-            - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  namespace: dev
-spec:
-  selector:
-    app: nginx
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
----
-
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: info
+  name: info1
   namespace: dev
 spec:
   serviceName: "info"
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: info
+      app: info1
   template:
     metadata:
       labels:
-        app: info
+        app: info1
     spec:
       containers:
         - name: info
@@ -200,7 +179,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: info
+  name: info1
   namespace: dev
 spec:
   ports:
@@ -208,55 +187,46 @@ spec:
       port: 80
       targetPort: 8010
   selector:
-    app: info
+    app: info1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: info
+  namespace: dev
+spec:
+  serviceName: "info"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: info2
+  template:
+    metadata:
+      labels:
+        app: info2
+    spec:
+      containers:
+        - name: info
+          image: y40103/info:2.0
+          ports:
+            - containerPort: 8010
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: info2
+  namespace: dev
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8010
+  selector:
+    app: info2
 ```
 
 
-#### Ingress Controller
-
-controller佈署後, 與後續其他資源有相關的主要元件有
-
-- deployment(controller)
-- Service(NodePort)
-- IngressClass
-
-
-
-佈署 bare metal ingress controller
-
-```yaml
-kubectl apply -f  bare-metal-ingress-controller.yaml
-```
-
-```mermaid
-graph LR
-    Client --> A["Ingress Controller Service(NodePort)"] --> B["Ingress Controller"] -->|ProxyReverse: example1 . com| C["App1 Service(ClusterIP)"] --> App1Pods
-    B -->|ProxyReverse: example2 . com| D["App2 Service(ClusterIP)"] --> App2Pods
-    Ingress -->|Add Rule by IngressClass | B
-    IngressClass -->|--arg 標示controller| B
-```
-
-會佈署在 namespace: ingress-nginx
-
-```bash
-kubectl get svc -n ingress-nginx
-#NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-#ingress-nginx-controller             NodePort    10.96.251.118   <none>        80:32608/TCP,443:31434/TCP   43m
-#ingress-nginx-controller-admission   ClusterIP   10.96.113.215   <none>        443/TCP                      43m
-```
-
-- bare metal ingress controller 的service, 官方config 預設NodePort
-- host:32608 可以反向代理至後面Pod , host 可用ingress制定rule 反向代理至Pod
-- ingressClass 是標記該controller是哪種web server type, controller的pod 是藉由--arg 相依
-- Ingress 的rule 是藉由 ingressClass 標記 注入rule至 controller
-
-
-#### Ingress
-
-佈署controller後
-
-設置反向代理規則,
-
+ingress
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -268,18 +238,6 @@ metadata:
 spec:
   ingressClassName: nginx  # IngressController config中定義的 ingressClass 名稱
   rules:
-    - host: "test.com"
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx
-                port:
-                  number: 80
-
-
     - host: "test2.com"
       http:
         paths:
@@ -287,78 +245,58 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: info
+                name: info1
                 port:
                   number: 8010
-
-```
-
-```bash
-kubectl get ingress -n dev
-#NAME            CLASS   HOSTS                ADDRESS      PORTS   AGE
-#nginx-ingress   nginx   test.com,test2.com   172.25.3.2   80      4h14m
-```
-
-查看controller log, 確認ingress rule有無異常
-
-```bash
-kubectl logs -f ingress-nginx-controller-5cdfb74dc-7c8jh -n ingress-nginx
-
-#異常log
-#I0603 01:57:01.620744      10 controller.go:210] "Backend successfully reloaded"
-#I0603 01:57:01.620872      10 controller.go:221] "Initial sync, sleeping for 1 second"
-#I0603 01:57:01.621019      10 event.go:364] Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-5cdfb74dc-7c8jh", UID:"0936ec43-f2d1-4b13-ad18-92d5a5fd85a9", APIVersion:"v1", ResourceVersion:"1730", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
-#W0603 02:02:21.745040      10 controller.go:330] ignoring ingress nginx-ingress in dev based on annotation : ingress does not contain a valid IngressClass
-#I0603 02:02:21.745066      10 main.go:107] "successfully validated configuration, accepting" ingress="dev/nginx-ingress"
-#I0603 02:02:21.749408      10 store.go:436] "Ignoring ingress because of error while validating ingress class" ingress="dev/nginx-ingress" error="ingress does not contain a valid IngressClass"
-#W0603 02:05:25.779985      10 controller.go:330] ignoring ingress nginx-ingress in dev based on annotation : ingress does not contain a valid IngressClass
-#I0603 02:05:25.780013      10 main.go:107] "successfully validated configuration, accepting" ingress="dev/nginx-ingress"
-#W0603 02:09:43.300435      10 controller.go:330] ignoring ingress nginx-ingress in dev based on annotation : ingress does not contain a valid IngressClass
-#I0603 02:09:43.300460      10 main.go:107] "successfully validated configuration, accepting" ingress="dev/nginx-ingress"
-
-#正常log
-#I0603 02:47:05.889709      10 controller.go:210] "Backend successfully reloaded"
-#I0603 02:47:05.889980      10 event.go:364] Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-5cdfb74dc-7c8jh", UID:"0936ec43-f2d1-4b13-ad18-92d5a5fd85a9", APIVersion:"v1", ResourceVersion:"1730", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
-#172.25.3.3 - - [03/Jun/2024:02:47:50 +0000] "GET / HTTP/1.1" 200 54 "-" "curl/7.88.1" 79 0.003 [dev-info-8010] [] 10.244.1.5:8010 54 0.004 200 ae0739a70333d426d6ca1bb9bd7f1c51
-#172.25.3.3 - - [03/Jun/2024:02:47:52 +0000] "GET / HTTP/1.1" 200 54 "-" "curl/7.88.1" 79 0.005 [dev-info-8010] [] 10.244.2.6:8010 54 0.004 200 82470641e7adc3c3b9a8a5370355843a
-#172.25.3.3 - - [03/Jun/2024:02:47:54 +0000] "GET / HTTP/1.1" 200 615 "-" "curl/7.88.1" 78 0.002 [dev-nginx-80] [] 10.244.2.4:80 615 0.002 200 ff8596da638ec0bdd44120ce1f2e650f
-#I0603 02:48:01.610245      10 status.go:304] "updating Ingress status" namespace="dev" ingress="nginx-ingress" currentValue=null newValue=[{"ip":"172.25.3.2"}]
-#I0603 02:48:01.618464      10 event.go:364] Event(v1.ObjectReference{Kind:"Ingress", Namespace:"dev", Name:"nginx-ingress", UID:"356e3d50-0fab-43fd-9ca2-8e983aec7a97", APIVersion:"networking.k8s.io/v1", ResourceVersion:"6875", FieldPath:""}): type: 'Normal' reason: 'Sync' Scheduled for sync
-
-
+    - host: "test3.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: info2
+                port:
+                  number: 8010
 ```
 
 
+### Cloud provider 
 
-#### 實際測試
-
+[參考](https://kubernetes.github.io/ingress-nginx/deploy/)
 
 ```bash
-curl test2.com:32608
-#ID: 2c8a393e-40bb-4528-be19-5b8ac4216a50
+kubectl apply -f kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+```
 
-curl test.com:32608
-#<!DOCTYPE html>
-#<html>
-#<head>
-#<title>Welcome to nginx!</title>
-#<style>
-#html { color-scheme: light dark; }
-#body { width: 35em; margin: 0 auto;
-#font-family: Tahoma, Verdana, Arial, sans-serif; }
-#</style>
-#</head>
-#<body>
-#<h1>Welcome to nginx!</h1>
-#<p>If you see this page, the nginx web server is successfully installed and
-#working. Further configuration is required.</p>
+實作待補充,   
+
+
+### NodePort ingress
+
+[參考](https://github.com/kubernetes/ingress-nginx/blob/main/docs/deploy/index.md#bare-metal-clusters)
+
+簡單說就是該ingress controller組件中的service為 NodePort, 藉由該service 可藉由訪問代理 根據hostname 導向其他service  
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/baremetal/deploy.yaml
+# 佈署controller 
+```
+
+確認 controller service 為 NodePort
+
+```bash
+kubectl get svc -n ingress-nginx
+#NAME                                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+#ingress-nginx-controller             NodePort    10.96.40.93    <none>        80:30436/TCP,443:30556/TCP   6m44s
+#ingress-nginx-controller-admission   ClusterIP   10.96.247.29   <none>        443/TCP                      6m44s
+```
+
+```bash
+curl test2.com:30436
+#ID: cdb25b50-1688-41c6-96c9-a18d3c9d4086
 #
-#<p>For online documentation and support please refer to
-#<a href="http://nginx.org/">nginx.org</a>.<br/>
-#Commercial support is available at
-#<a href="http://nginx.com/">nginx.com</a>.</p>
+curl test3.com:30436
+#ID: 9b6aec0d-09b1-4463-96c1-c701820e08bd
 #
-#<p><em>Thank you for using nginx.</em></p>
-#</body>
 ```
-
