@@ -60,8 +60,8 @@ graph LR
   A --- B["Service"] ---> Pod
 ```
 
-- Metallb
-  - layer2: 通過ARP來宣告IP, 僅限於本地網路 (無法直接從外部訪問)
+- Metallb: 可做為on-premise ingress controller的 load-balancer service 解決方案  
+  - layer2: 通過ARP來宣告IP, 用於較簡易架構的服務
   - BGP: 用於大規模跨網段佈署, 路由器需支援BGP, 常用於異地數據中心, 混合雲環境
 
 - NodePort: 將NodePort Service 綁定特定ingress rule,
