@@ -13,7 +13,7 @@ mermaid: true
 直接使用container佈署nfs server
 
 
-## NFS Server
+### NFS Server
 
 NFS server
 
@@ -97,7 +97,7 @@ hccuse@hcuuse-PC ~/I/y/G/h/h/l/n/client> df
 sudo umount /home/hccuse/Insync/y40103@gmail.com/GoogleDrive/hccuse/hccuse/learn/nfs/client
 ```
 
-## Troubleshooting
+### Troubleshooting
 
 docker compose 無法卸除 , 可能是client端還在執行, 產生阻塞
 
