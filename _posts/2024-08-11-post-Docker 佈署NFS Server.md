@@ -66,9 +66,12 @@ docker compose up -d
 sudo mount -v <nfs server ip>:/ <client nfs path>
 ```
 
-執行範例
-假設客戶端共享目錄為 ./client , 這邊客戶端為為 host主機,  目的是在host主機作與docker內部的nfs server交互
-因設置 2049:2049  nfs server ip 直接使用host主機的172.16.1.143, 會直接轉至 nfs server container 內部
+執行範例  
+假設客戶端共享目錄為 ./client , 這邊客戶端為為 host主機,  
+目的是在host主機作與docker內部的nfs server交互  
+因docekr設置 2049:2049  
+nfs server ip 直接使用host主機的172.16.1.143,  
+會直接轉至 nfs server container 內部  
 
 ```bash
 sudo mount -v 192.168.1.143:/ ./client
