@@ -216,9 +216,11 @@ sudo systemctl start nfs-kernel-server
 
 
 
-## Persistent Volume
+## PV & PVC
 
-volume抽象化物件管理, 簡單說就是把可以掛載至pod的目錄抽象化成kubernetes的物件, 可以被kubernetes管理
+用於volume抽象化物件管理,   
+PV 簡單說就是把可以掛載至pod的目錄抽象化成kubernetes的物件, 可以被kubernetes管理  
+PVC 則是用於定義需求的抽象化  
 
 ### PV
 
@@ -226,13 +228,14 @@ PV = 被抽象化的資源名稱, 支援多種不同的類型
 
 - hostPath
 - nfs
-- local
+- local-storage
 - awsebs
 - gcepd
 - azuredisk
 - cephfs
 - ....
 
+通常是由系統管理者進行創建, 開發者只需要在app中指定需求, 就會去抓符合資格的pv  
 
 文件說明
 ```
@@ -331,8 +334,8 @@ kubectl edit pv hostpath-pv -n dev
 ### PVC
 
 
-PVC 可以理解成PV的 consumer, 需要先定義PVC 中PV需求, 當PVC被創建時, 會嘗試去綁定適合的PV
-PVC可分 `靜態` 與 `動態` , 動態可設置storageClass, 可使PVC自行創建適合的PV去綁定
+PVC 可以理解需求的抽象化  當PVC被創建時, 會嘗試去綁定適合的PV  
+PVC可分 `靜態` 與 `動態`   動態可設置storageClass,   可使PVC自行創建適合的PV去綁定  
 
 
 ```yaml
