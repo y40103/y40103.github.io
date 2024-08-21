@@ -327,8 +327,13 @@ cephfs
 要回復狀態為 Available
 
 可使用edit 或是 patch , 刪除 `claimRef` 的內容 ,　就可回到Available
-```yaml
+```bash
 kubectl edit pv hostpath-pv -n dev
+```
+or
+
+```bash
+kubectl patch pv hostpath-pv -p '{"spec":{"claimRef": null}}'
 ```
 
 ### PVC
