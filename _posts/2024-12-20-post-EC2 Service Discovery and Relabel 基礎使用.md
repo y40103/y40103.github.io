@@ -91,6 +91,13 @@ relabel_configs:
   target_label: __address__
 ```
 
+以下為 抓取的instance 新增label, 因prometheus 新增標籤 會將原instance複製一份 再加上新 label, 若使用action: replacement, 會直接新增在原instance上  
+```
+- target_label: node_name
+  replacement: test-playground
+  action: replacement
+```
+
 ### meta label
 
 一般 instance 基本的 meta label
@@ -131,4 +138,3 @@ ec2 service discovery instance meta label
 | `__meta_ec2_subnet_id`              | 實例所在的子網 ID 列表（逗號分隔，如果可用）                            |
 | `__meta_ec2_tag_<tagkey>`           | 實例的每個標籤值                                            |
 | `__meta_ec2_vpc_id`                 | 實例所在 VPC 的 ID（如果可用）                                 |
-
