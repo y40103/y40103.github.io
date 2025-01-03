@@ -3,7 +3,7 @@ title: "[筆記] Prometheus config 基礎設定"
 categories:
   - 筆記
 tags:
-  - Git
+  - Prometheus
 toc: true
 toc_label: Index
 mermaid: true
