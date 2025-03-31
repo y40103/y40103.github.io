@@ -1,10 +1,10 @@
 ---
-title: "[筆記] oapi gencode"
+title: "[筆記] oapi gencode 基礎使法"
 categories:
   - 筆記
 tags:
-  - Swagger
   - Golang
+  - oapi-codegen
 toc: true
 toc_label: Index
 ---
@@ -14,7 +14,9 @@ Golang Swagger3.0 方案之一
 - 為Swagger 3.0 config first的 Golang codegen工具, [oapi-codegen](https://github.com/deepmap/oapi-codegen/tree/master)  
 - 主要是藉由swagger config生成API的輸入輸出類型相關的程式碼(request參數輸入,response輸出的 marshal/unmarshal)  
 <br/>
+
 優點為  
+
 - 可以保持API文件與程式碼的一致性
 - 節省mashalling/unmashalling的時間
 - 只需要開發者專注於handler的實現
@@ -28,8 +30,6 @@ Golang Swagger3.0 方案之一
 - gorilla/mux
 - Iris
 - net/http (Go 1.22+)
- 
-
 
 ## 差異
 
@@ -37,13 +37,13 @@ Golang Swagger3.0 方案之一
 除了只支援swagger2.0之外, 藉由撰寫註釋的方式來生成swagger文檔維護上沒有想像中的好用,所有的異動都需要靠自己來維護  
 唯一的優點是比較直覺一些,對於初次使用者來說比較容易上手  
 
-
 ## 安裝
 
 ```bash
 go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@latest
 oapi-codegen -version
 ```
+
 ## gencode 指令
 
 ```bash
@@ -52,10 +52,10 @@ oapi-codegen --package=<package name> <swagger config yaml/json>
 ```
 
 實際範例
+
 ```bash
 oapi-codegen --package=api dist/openapi_test.yaml > api/gencode.go
 ```
-
 
 ## 開發流程
 
@@ -69,7 +69,6 @@ oapi-codegen --package=api dist/openapi_test.yaml > api/gencode.go
 這邊是使用 oapi-codegen的範例, 實做一個最簡單的API Demo  
 oapi-gencode 編寫的swagger文件需依賴Swagger的編輯器才能瀏覽效果, 這邊會新增一個swagger的WebUI來方便瀏覽效果
 
-
 ### 初始化
 
 ```bash
@@ -82,7 +81,6 @@ mkdir api
 ```
 
 需先去[swagger](https://github.com/swagger-api/swagger-ui) clone下來, 並將dist目錄複製到專案目錄下
-
 
 ### openapi文件
 
@@ -122,7 +120,6 @@ components:
 oapi-codegen --package=api dist/openapi_test.yaml > api/gencode.go
 ```
 
-
 ### 修改swagger dist config目標
 
 需把swagger dist套用的設定檔改成剛剛寫的openapi_test.yaml  
@@ -151,7 +148,6 @@ window.onload = function() {
 };
 ```
 
-
 ### handler
 
 藉由oapi-codegen 生成程式碼(request input,response output), 編寫新增api/impl.go
@@ -160,9 +156,9 @@ window.onload = function() {
 package api
 
 import (
-	"net/http"
+ "net/http"
 
-	"github.com/labstack/echo/v4"
+ "github.com/labstack/echo/v4"
 )
 
 // ensure that we've conformed to the `ServerInterface` with a compile-time check
@@ -171,16 +167,16 @@ var _ ServerInterface = (*Server)(nil)
 type Server struct{}
 
 func NewServer() Server {
-	return Server{}
+ return Server{}
 }
 
 // (GET /ping)
 func (Server) GetPing(ctx echo.Context) error {
-	resp := Pong{
-		Ping: "pong",
-	}
+ resp := Pong{
+  Ping: "pong",
+ }
 
-	return ctx.JSON(http.StatusOK, resp)
+ return ctx.JSON(http.StatusOK, resp)
 }
 ```
 
@@ -193,30 +189,29 @@ func (Server) GetPing(ctx echo.Context) error {
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"log"
-	"net/http"
+ "github.com/labstack/echo/v4"
+ "log"
+ "net/http"
 
-	"minimal_echo/api"
+ "minimal_echo/api"
 )
 
 func main() {
-	// create a type that satisfies the `api.ServerInterface`, which contains an implementation of every operation from the generated code
-	server := api.NewServer()
+ // create a type that satisfies the `api.ServerInterface`, which contains an implementation of every operation from the generated code
+ server := api.NewServer()
 
-	e := echo.New()
+ e := echo.New()
 
-	// Serve the Swagger UI files and the dist folder
-	e.GET("/docs/*", echo.WrapHandler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./dist")))))
+ // Serve the Swagger UI files and the dist folder
+ e.GET("/docs/*", echo.WrapHandler(http.StripPrefix("/docs/", http.FileServer(http.Dir("./dist")))))
 
-	api.RegisterHandlers(e, server)
+ api.RegisterHandlers(e, server)
 
-	// And we serve HTTP until the world ends.
-	log.Fatal(e.Start("0.0.0.0:8080"))
+ // And we serve HTTP until the world ends.
+ log.Fatal(e.Start("0.0.0.0:8080"))
 }
 
 ````
-
 
 ### 目錄結構
 
@@ -259,5 +254,4 @@ go build main.go
 ./main
 ```
 
-此時可訪問 [http://localhost:8080/docs/](http://localhost:8080/docs/) 來瀏覽swagger文檔   
-
+此時可訪問 [http://localhost:8080/docs/](http://localhost:8080/docs/) 來瀏覽swagger文檔
