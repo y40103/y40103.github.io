@@ -15,6 +15,9 @@ mermaid: true
 
 拆分後的文檔, 可以codegen 輸出成同一 package, 也可以輸出成不同的package  
 
+在codegen中 主要目的是利用這個特性把openapi codegen的輸出拆成多成package,  
+這樣可以針對不同package使用不同的middleware, 如部份 handler 加上jwt, 部份不使用jwt
+
 ## 目錄說明
 
 - openapi spec config
@@ -35,6 +38,8 @@ mermaid: true
     - multiplepackages/user/cfg.yaml: oapi-codegen command 輸出 被引用部份的codegen 設定檔
 
 ```bash
+
+cd import-mapping
 tree
 ├── admin
 │   └── api.yaml
@@ -42,13 +47,22 @@ tree
 │   └── api.yaml
 ├── multiplepackages
 │   ├── admin
+│   │   ├── cfg.yaml
+│   │   └── server.gen.go
 │   └── common
+│       ├── cfg.yaml
+│       └── types.gen.go
 ├── readme.md
 └── samepackage
     ├── cfg-api.yaml
     ├── cfg-user.yaml
     ├── server.gen.go
     └── user.gen.go
+```
+
+```bash
+go mod init import-mapping
+go mod tidy
 ```
 
 ### admin/api.yaml
@@ -127,6 +141,35 @@ package: samepackage
 output: user.gen.go
 generate:
   #  echo-server: true
+  models: true
+output-options:
+  # to make sure that all types are generated
+  skip-prune: true
+```
+
+### multiplepackages/admin/cfg.yaml
+
+```yaml
+# yaml-language-server: $schema=../../../configuration-schema.json
+package: admin
+output: server.gen.go
+generate:
+  models: true
+  chi-server: true
+output-options:
+  # to make sure that all types are generated
+  skip-prune: true
+import-mapping:
+  ../common/api.yaml: "import-mapping/multiplepackages"
+```
+
+### multiplepackages/user/cfg.yaml
+
+```yaml
+# yaml-language-server: $schema=../../../configuration-schema.json
+package: common
+output: types.gen.go
+generate:
   models: true
 output-options:
   # to make sure that all types are generated
