@@ -10,81 +10,68 @@ mermaid: true
 ---
 
 DockerFile 使用非root user時  
-若執行 container 有volume目錄進去   
-會有container內部user無法寫入該volume目錄的問題   
+若執行 container 有volume目錄進去
+會有container內部user無法寫入該volume目錄的問題
 會有這問題是因為 內部user的 uid 與 gid 與 host主機不一致  
 而volume進去的目錄是屬於host user的權限  
 解決方式就是把內外user的uid gid一致 (user名稱不一樣沒關係)  
 
-
 ### 參考範例
 
-這邊dockerfile 使用非root user, 
-```Dockerfile
-# FROM python:3.11-alpine
-FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
-
-RUN pip install \
-    azure-cosmos \
-    pandas \
-    pydantic \
-    pydantic-settings \
-    scikit-learn \
-    matplotlib \
-    sqlalchemy \
-    psycopg2-binary \
-    aiohttp \
-    asyncpg \
-    click
-
-
-RUN apt update -y && apt --no-install-recommends install -y curl && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-amd64 \
-    SUPERCRONIC=supercronic-linux-amd64
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
- && chmod +x "$SUPERCRONIC" \
- && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
- && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
-
-
-RUN useradd -m -d /home/docker -s /bin/bash docker
-USER docker  #非root user
-
-RUN <<EOF cat > /tmp/cronjob.conf
-*/10 * * * * /opt/conda/bin/python /app/main.py -j predict_job
-EOF
-
-RUN <<EOF cat > /tmp/cron_run.sh
-#! /usr/bin/bash
-sleep 5
-/opt/conda/bin/python /app/main.py -j predict_job
-sleep 60
-/usr/local/bin/supercronic /tmp/cronjob.conf
-EOF
-
-RUN chmod a+x /tmp/cron_run.sh
-
-WORKDIR /app
-```
-
 ```bash
-export user_uid=$(id -u)
-export user_gid=$(id -g)
+id -u
+# 1000
+id -g
+# 1000
 ```
 
+這邊dockerfile 使用非root user,  也可配合ARG使用  
+有時候會有需要root的場景, 加入sudo without password
+
+```Dockerfile
+FROM ubuntu:22.04
+
+RUN apt-get update -y
+RUN apt-get install build-essential procps curl file git -y
+RUN apt-get install -y gnupg software-properties-common
+RUN apt-get install -y wget
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | \
+  gpg --dearmor | \
+  tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+RUN gpg --no-default-keyring \
+  --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+  --fingerprint
+RUN echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+  https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+  tee /etc/apt/sources.list.d/hashicorp.list
+
+RUN apt update
+RUN apt-get install terraform -y
+RUN apt-get install -y fish
+RUN apt-get install vim -y && apt-get install -y init
+RUN apt-get install sudo -y
+RUN wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.69.0/terragrunt_linux_amd64
+RUN mv terragrunt_linux_amd64 /usr/bin/terragrunt
+RUN chmod 775 /usr/bin/terragrunt
+RUN groupadd -g 1000 hccuse
+RUN useradd -m -u 1000 -g hccuse -d /home/hccuse -s /usr/bin/fish hccuse && usermod -aG sudo hccuse
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> \
+  /etc/sudoers.d/nopasswd
+USER hccuse
+WORKDIR /home/hccuse/
+```
 
 docker compose.yaml
+
 ```yaml
 services:
-  predictor:
-    user: ${user_uid}:${user_gid}  # 這邊可以指定 container user 的 gid uid
+  terraform:
+    image: terraform_play_ground
+    container_name: tenv
+    restart: always
+    user: hccuse
     build:
-      dockerfile: Dockerfile
-      context: ./
-    working_dir: /app
-
-# ...
+      context: .
+      dockerfile: ./Dockerfile
+    entrypoint: sleep 999999
 ```
-
-
