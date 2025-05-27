@@ -43,12 +43,9 @@ vim ~/.docker/config.json
 
 ```bash
 {
-  "auths": {
-    "https://index.docker.io/v1/": {
-      "auth": "eTQwMTAzOmEzNOOOOOOOOO"
-    }
-  },
-  "credsStore": "ecr-login"
+  "credHelpers": {
+    "OOOOO.dkr.ecr.ap-northeast-1.amazonaws.com": "ecr-login"
+  }
 }
 
 ```
