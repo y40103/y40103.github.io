@@ -19,7 +19,7 @@ sudo apt install certbot python3-certbot-nginx
 sudo apt install nginx
 ```
 
-## 方案一 只想為某domain取得憑證檔案
+## 方案a. 只想為某domain取得憑證檔案
 
 ```bash
 sudo certbot certonly --manual --preferred-challenges=dns --server https://acme-v02.api.letsencrypt.org/directory --agree-tos -d <domain name>
@@ -83,7 +83,7 @@ server {
 }
 ```
 
-## 直接在該臺機器設定憑證,並自動renew
+## 方案b. 直接在該臺機器設定憑證,並自動renew
 
 假設要申請 proxy.houseminer.com.tw proxy2.houseminer.com.tw
 

@@ -56,9 +56,11 @@ graph LR
 
 | 名稱       | 說明                                                              |
 |----------|-----------------------------------------------------------------|
-| channel  | 輕量級的connection, 讓rabbitMQ一個TCP connection中包含多個channel, 減少TCP的開銷 |
-| Exchange | 可以理解成 Message的 route, 把Message轉至相對應的Queue中                      |
+| channel  | 輕量級的connection, 讓rabbitMQ一個TCP connection中包含多個channel, 減少TCP的開銷|
+| Exchange | 可以理解成 Message的 entrypoint, 把Message轉至相對應的Queue中  |
 | Queue    | 存儲Message的容器,等待Message被送入儲存, 最後被Consummer取出處理                   |
+| BindKey  | exchange 導向 queue 的 rule, 也可以為空, 表示無條件導向所有有相關的queue           |
+| routeKey | 每個Message 會伴隨的label key, 用來給exchange作為導向的依據 |
 
 ## 名詞解釋
 
@@ -191,21 +193,33 @@ graph LR
 
 ### Topic
 
-- 單詞定義 為 用 `.` 分切的詞彙 e.g. `order.info`  有兩個單詞 `order`, `info`
-- `*` 表示match 1個 任意單詞
-- `#` 表示match 0個或多個 任意單詞
+這邊簡單來說是定義一組bindkey, 可以理解成rule, 把 exchange 與 queue做連結
+之後msg進入 exchagne後 會根據 msg的key  導向 相對應的queue  
+
+- bind key
+  - 單詞定義 為 用 `.` 分切的詞彙 e.g. `order.info`  有兩個單詞 `order`, `info`
+  - 若要用 # * 必須符合 `單詞.單詞.單詞` 的形式, `＃單詞*` 是不合法的
+  - `*` 表示match 1個 任意單詞  e.g.  `*.info.*`  可以match  `apple.info.good`
+  - `#` 表示match 0個或多個 任意單詞   e.g. `#.info`  可以match  `apple.info`  or  `info`
+
+- 具有fan out 性質, 同一組exchange 可以有綁定多個queue
 
 ```mermaid
     graph LR
+
+    Queue1[queue_Apple.*.*]
+    Queue2[queue_Orange.#]
+    Queue3[queue_Lemon.Cool.*]
+
     subgraph Broker
-        topic_exchange1 ---|routingKey = Apple . * . *| queue_Apple.Juice
-        topic_exchange2 ---|routingKey = # . Guy| queue_Orange.Cool.Guy
-        topic_exchange2 ---|routingKey = # . Guy| queue_Lemon.Cool.Guy
+        topic_exchange1 ---|routingKey = queue_Apple.Juice| Queue1
+        topic_exchange2 ---|routingKey = queue_Orange.Cool.Guy| Queue2
+        topic_exchange2 ---|routingKey = queue_Lemon.Cool.Guy| Queue3 
     end
     Producer -->|send| topic_exchange1
     Producer -->|send| topic_exchange2
-    queue_Apple.Juice -->|polling| Consumer1
-    queue_Orange.Cool.Guy -->|polling| Consumer2
-    queue_Lemon.Cool.Guy -->|polling| Consumer3
+    Queue1 -->|polling| Consumer1
+    Queue2 -->|polling| Consumer2
+    Queue3 -->|polling| Consumer3
 
 ```
