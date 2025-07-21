@@ -11,7 +11,7 @@ toc_label: Index
 
 免費仔的SSL好夥伴
 
-## install
+## Install
 
 ```bash
 sudo apt update
