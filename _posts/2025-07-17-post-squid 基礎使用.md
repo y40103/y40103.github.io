@@ -4,6 +4,7 @@ categories:
   - 筆記
 tags:
   - squid
+  - forward-proxy
 toc: true
 toc_label: Index
 ---
@@ -31,13 +32,13 @@ sequenceDiagram
     participant Client as 客戶端<br/>(瀏覽器)
     participant Squid as Squid 代理
     participant Server as 目標伺服器<br/>(example.com:443)
-    
+
     Note over Client,Server: 1. 建立隧道階段 (明文)
     Client->>Squid: CONNECT example.com:443 HTTP/1.1
     Squid->>Server: 建立 TCP 連接
     Server-->>Squid: 連接成功
     Squid-->>Client: 200 Connection established
-    
+
     Note over Client,Server: 2. SSL/TLS 隧道建立後 (加密)
     rect rgb(255, 240, 240)
         Note over Client,Server: 所有流量都是加密的，Squid 只是轉發
@@ -50,7 +51,7 @@ sequenceDiagram
         Server-->>Squid: SSL 握手完成
         Squid-->>Client: 轉發 SSL 握手完成
     end
-    
+
     Note over Client,Server: 3. 應用層資料傳輸 (完全加密)
     rect rgb(240, 255, 240)
         Client->>Squid: 加密的 HTTP 請求
@@ -58,28 +59,27 @@ sequenceDiagram
         Server-->>Squid: 加密的 HTTP 回應
         Squid-->>Client: 轉發加密資料
     end
-    
+
     Note over Squid: Squid 無法解讀加密內容<br/>只能看到：<br/>• 目標域名 (example.com)<br/>• 連接時間<br/>• 傳輸量
 ```
-
-## 主機資訊
-
-假設兩台主機
-
-- server: 120.44.197.55
-- client: 43.22.123.6
 
 ## server
 
 ```bash
-sudo apt-get update
-sudo apt-get install squid
+sudo apt update
+sudo apt install -y squid-openssl; sudo apt clean
+# 需裝 openssl版本 原版本預設沒有openssl模組, 若要用需要從github找source重新編譯
 ```
+
+配合cerbot組合, 可以直接開啟SSL
 
 vim /etc/squid/squid.conf
 
 ```text
-acl aws_nat src 43.22.123.5/32
+https_port 443 cert=/etc/letsencrypt/live/proxy.houseminers.com.tw/fullchain.pem key=/etc/letsencrypt/live/proxy.houseminers.com.tw/privkey.pem
+acl SSL_ports port 443
+acl CONNECT method CONNECT
+acl aws_nat src 43.22.123.6/32
 http_access allow aws_nat
 # 需放在最前面
 # 有順序性
@@ -92,11 +92,10 @@ http_port 3128 #這是預設的 原本就有, 要修改可以直接/3128
 ## cliet
 
 ```bash
-export http_proxy="http://120.44.197.55:3128"
+export http_proxy="https://proxy.houseminers.com.tw"
 # 該terminal session 所有http 做forward proxy
-export https_proxy="http://120.44.197.55:3128"
+export https_proxy="https://proxy.houseminers.com.tw"
 # 該terminal session 所有https 做forward proxy
-
 unset http_proxy
 # 取消環境變數 = 取消http_proxy
 unset https_proxy
@@ -109,7 +108,7 @@ or 應用程式單獨設置proxy
 ```python
 import requests
 
-proxy = "http://120.44.197.54:3128"
+proxy = "https://proxy.houseminers.com.tw"
 
 proxies = {
     "http": proxy,
