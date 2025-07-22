@@ -223,7 +223,7 @@ sudo partprobe /dev/sdx
 # or reboot 建議重開比較穩
 ```
 
-### typecode對照表
+#### typecode對照表
 
 typecode `代碼:分區類型碼` 標記該磁區用途
 
@@ -239,7 +239,7 @@ typecode `代碼:分區類型碼` 標記該磁區用途
 | **`ef00`**  | **EFI System Partition** | 用於 UEFI 啟動的系統分區 (ESP)                  |
 | `0700`      | Microsoft basic data     | 用於 Windows NTFS, FAT32 等                     |
 
-### --new 規則
+#### --new 規則
 
 ```text
 第1個數字: 分區代號 , 0 請自動尋找最低的可用分區編號 , 若是1 則是指定分區代號1
