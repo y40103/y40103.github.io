@@ -23,7 +23,7 @@ toc_label: Index
 
 ---
 
-## 🧱 目錄結構範例
+## 🧱 目錄結構與基礎設定範例
 
 ```bash
 .
@@ -77,7 +77,7 @@ toc_label: Index
 
 ```
 
-### root.hcl
+### root.hcl 範本
 
 這邊是根目錄資源, 基本上這個hcl是每個子hcl都會include進去的, 語法如下
 
@@ -153,7 +153,7 @@ provider "aws" {
 
 若是寫raw terraform 全部塞成一大包 main.tf , 就會有一組以上設定, terragrunt只是把一大包拆成小單位, 每個小單位也都會需要一組
 
-## 資源檔 terragrunt.hcl 範本
+### 資源檔 terragrunt.hcl 範本
 
 ```hcl
 terraform {
@@ -181,7 +181,7 @@ inputs = {
 }
 ```
 
-## modules 範例
+### modules 範例
 
 - main.tf 可理解為主物件
 
