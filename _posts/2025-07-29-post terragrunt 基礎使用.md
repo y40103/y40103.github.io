@@ -181,7 +181,7 @@ inputs = {
 }
 ```
 
-### modules 範例
+### modules 範本
 
 - main.tf 可理解為主物件
 
