@@ -89,7 +89,7 @@ http_access allow aws_nat
 http_port 3128 #這是預設的 原本就有, 要修改可以直接/3128
 ```
 
-## cliet
+## client
 
 ```bash
 export http_proxy="https://proxy.houseminers.com.tw"
