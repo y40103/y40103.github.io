@@ -260,12 +260,11 @@ output "forward_service_port" {
 通常會在 environment/dev/ 這目錄下執行, 意思是創建 or 刪除 dev的infra資源
 
 ```bash
-terragrunt run-all apply
+terragrunt apply --all --working-dir=environment/dev
 # 遞迴執行當前目錄下所有hcl 所創建的資源
 
-terragrunt run-all apply -destroy
-
-# 遞迴刪除當前目錄下所有hcl 所創建的資源
+terragrunt destroy --all --working-dir=environment/dev
+# 遞迴刪除指定目錄下所有hcl 所創建的資源
 ```
 
 通常會在 environment/dev/alb_proxy/ 下執行, 創建 or 刪除 當前資源 (若有dependency需注意, 需先刪除 or 創建 dependency 才能操作)
@@ -275,5 +274,6 @@ terragrunt apply
 # 創建當前資源
 
 terragrunt apply -destroy
+terragrunt destroy
 # 刪除當前資源
 ```
