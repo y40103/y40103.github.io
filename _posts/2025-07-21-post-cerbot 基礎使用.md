@@ -106,6 +106,8 @@ sudo ufw allow 443/tcp
 
 這邊驗證是server side, 作法是直接在目錄下創建指定的檔案內容, 會有驗證方來request這台機器檢查內容是否符合
 
+在這執行前, 可以手動新增nginx config, 不自訂則是自動輸出在 /etc/nginx/sites-available/default
+
 ```bash
 sudo certbot --nginx -d proxy.houseminer.com.tw -d proxy2.houseminer.com.tw
 ```
@@ -210,5 +212,48 @@ server {
 }
 
 ### 以上80
+
+```
+
+or 不使用default, 手動在`/etc/nginx/conf.d/` 下新增一個 `.conf`
+
+```text
+client_max_body_size    2048M;
+
+server {
+    server_name nessus.houseminer.com.tw;
+
+    location / {
+        proxy_pass http://127.0.0.1:8834;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/vpn.houseplus.click/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/vpn.houseplus.click/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+
+}
+
+
+server {
+    if ($host = vpn.houseplus.click) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name nessus.houseminer.com.tw;
+    listen 80;
+    return 404; # managed by Certbot
+
+}
 
 ```
