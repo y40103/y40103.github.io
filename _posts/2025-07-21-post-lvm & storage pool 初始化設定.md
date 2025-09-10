@@ -400,7 +400,6 @@ lvcreate --name will_tainan --size 200G anfu_vg
 ```bash
 lvextend -L +8G /dev/anfu_vg/will_tainan
 # 假設我要擃展 will_tainan lvg的大小
-
 ```
 
 lvg 切出固定大小後 就是要格式化, 之後用mount掛載成目錄, 就可以當作一般硬碟用
@@ -415,6 +414,42 @@ sudo mkfs.ext4 /dev/ubuntu-vg/test_vm_storage
 
 ```bash
 resize2fs /dev/anfu_vg/will_tainan
+```
+
+- after lvextend, refresh VM space
+
+```bash
+# in vm machine
+
+lsblk
+#NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+#sr0     11:0    1 1024M  0 rom
+#vda    253:0    0  256G  0 disk
+#├─vda1 253:1    0    1M  0 part
+#└─vda2 253:2    0  128G  0 part /
+
+sudo growpart /dev/vda 2
+# extend partition table
+
+
+lsblk
+#NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+#sr0     11:0    1 1024M  0 rom
+#vda    253:0    0  256G  0 disk
+#├─vda1 253:1    0    1M  0 part
+#└─vda2 253:2    0  256G  0 part /
+
+df -lh
+#Filesystem      Size  Used Avail Use% Mounted on
+#/dev/vda2       128G   97G  31G  76% /
+
+sudo resize2fs /dev/vda2
+# extend to file sysyem
+
+df -lh
+#Filesystem      Size  Used Avail Use% Mounted on
+#/dev/vda2       252G   97G  144G  41% /
+
 ```
 
 - 刪除lvg
