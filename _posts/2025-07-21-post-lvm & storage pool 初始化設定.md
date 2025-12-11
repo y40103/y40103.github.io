@@ -373,7 +373,7 @@ lv = vgs 切一部分容量成 lv, 這邊可以直接格式化成filesystem moun
 - 檢視lvg
 
 ```bash
-lvg
+lvs
 #LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
 #ubuntu-lv ubuntu-vg -wi-ao---- 100.00g
 ```
