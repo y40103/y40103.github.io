@@ -11,15 +11,25 @@ mermaid: true
 
 鑒權基本上分為身份驗證(authentication)與授權(authorization)
 
+```mermaid
+graph LR
+    Pod -->|掛載| SA[ServiceAccount]
+    SA -->|subject| RB[RoleBinding]
+    RB -->|roleRef| CR[ClusterRole / Role]
+    CR -->|定義| Rules["rules\n- resources: pods\n- verbs: get, list"]
+
+    RB -->|生效範圍| NS[Namespace]
+```
+
 - authentication:
-    - service account
-    - user account
+  - service account
+  - user account
 - authorization:
-    - RBAC
-        - Role
-        - ClusterRole
-        - RoleBinding
-        - ClusterRoleBinding
+  - RBAC
+    - Role
+    - ClusterRole
+    - RoleBinding
+    - ClusterRoleBinding
 
 ## Authentication
 
@@ -41,7 +51,8 @@ kubectl get sa
 #default   0         24h
 ```
 
-參考field  
+參考field
+
 ```yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -70,16 +81,15 @@ metadata:
   namespace: dev
 ```
 
-
 ### User Account
 
 用於kubectl與API server進行交互時的身份驗證
 
-紀錄一下概念    
+紀錄一下概念  
 簡單的理解就是用 k8s ca 自簽一個憑證, 該憑證可以作為一個身份跟apiserver交互  
 <br>
 kubectl就是依賴~/.kube/config 表明身份並跟哪個cluster交互  
-可以理解成一個client端的auth文件    
+可以理解成一個client端的auth文件  
 <br/>
 這邊創建User是同HTTPS身份驗證的概念,  
 作法上是創建一個私鑰 key , 並創建一個CSR,  
@@ -88,12 +98,11 @@ kubectl就是依賴~/.kube/config 表明身份並跟哪個cluster交互
 創建該user後, 就可以使用context 來切換使用者身份  
 <br/>
 設置權限的部份  
-剛創建的user 是無任何權限的, 添加權限的方式是同service account,  使用RBAC,  
-透過創建Role, ClusterRole, RoleBinding, ClusterRoleBinding  來設置權限  
+剛創建的user 是無任何權限的, 添加權限的方式是同service account, 使用RBAC,  
+透過創建Role, ClusterRole, RoleBinding, ClusterRoleBinding 來設置權限  
 <br/>
 透過User account, 可以達成在隨意的server只要有kubectl,只要~/.kube/config 有授權, 透過切換context, 轉換不同身份與多個k8s的cluster進行交互  
-待補充實做   
-
+待補充實做
 
 ## Authorization
 
@@ -103,17 +112,24 @@ kubectl就是依賴~/.kube/config 表明身份並跟哪個cluster交互
 
 Role-Based-Access Control, 基於角色進行權限控制
 
-定義完後, 可以綁定的目標為
+Role(一般是Role/clusterRole + RoleBinding/ClusterRoleBinding) 定義完後, 可以綁定的目標為
 
 - User
 - Group
 - ServiceAccount
 
+Role Binding 組合
 
-常用資源對照
+| Binding            | Role 類型   | 生效範圍     | 優點                                                       |
+| ------------------ | ----------- | ------------ | ---------------------------------------------------------- |
+| RoleBinding        | Role        | 該 namespace | 簡單直覺，規則跟 namespace 綁在一起                        |
+| RoleBinding        | ClusterRole | 該 namespace | ClusterRole 定義一次，多個 namespace 複用，不用重複建 Role |
+| ClusterRoleBinding | ClusterRole | 整個 cluster | 可操作所有 namespace + cluster-level 資源（nodes, PV）     |
+
+Role行為定義常用資源對照
 
 | API Group                   | Resources                                                                                                         |
-|-----------------------------|-------------------------------------------------------------------------------------------------------------------|
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `""` (core api group)       | `pods`, `services`, `nodes`, `configmaps`, `secrets`, `namespaces`, `persistentvolumeclaims`, `persistentvolumes` |
 | `apps`                      | `deployments`, `statefulsets`, `daemonsets`, `replicasets`                                                        |
 | `batch`                     | `jobs`, `cronjobs`                                                                                                |
@@ -123,7 +139,7 @@ Role-Based-Access Control, 基於角色進行權限控制
 | `storage.k8s.io`            | `storageclasses`, `volumeattachments`                                                                             |
 
 | Verb     |
-|----------|
+| -------- |
 | `get`    |
 | `list`   |
 | `watch`  |
@@ -163,9 +179,9 @@ metadata:
   namespace: dev
   name: worker-role
 rules:
-  - apiGroups: [ "batch" ]
-    resources: [ "jobs" ]
-    verbs: [ "get", "list", "watch", "create","delete","patch" ]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
 ```
 
 #### clusterRole
@@ -181,29 +197,27 @@ metadata:
   namespace: dev
   name: worker-role
 rules:
-  - apiGroups: [ "batch" ]
-    resources: [ "jobs" ]
-    verbs: [ "get", "list", "watch", "create","delete","patch" ]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
 ```
 
 #### RoleBinding & ClusterRoleBinding
 
 RoleBinding與ClusterRoleBinding的設定方式相同, 只是RoleBinding是針對namespace, ClusterRoleBinding是針對cluster
 
-- subjects: 主詞, 可以是User, Group, ServiceAccount , group待釐清 ,,,   
-- roleRef: 綁定哪個Role or  ClusterRole   
-
+- subjects: 主詞, 可以是User, Group, ServiceAccount , group待釐清 ,,,
+- roleRef: 綁定哪個Role or ClusterRole
 
 Binding kind apiGroup 對照表
 
 | Kind             | API Group                   |
-|------------------|-----------------------------|
+| ---------------- | --------------------------- |
 | `Role`           | `rbac.authorization.k8s.io` |
 | `ClusterRole`    | `rbac.authorization.k8s.io` |
 | `User`           | `rbac.authorization.k8s.io` |
 | `Group`          | `rbac.authorization.k8s.io` |
 | `ServiceAccount` | `""` (core API group)       |
-
 
 設定檔範例
 
@@ -234,7 +248,6 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-
 實際範例
 
 這邊為某pod, 可以get,watch,list,create,delete,patch 所有jobs,namespaces,pods,pods/log
@@ -245,11 +258,10 @@ kind: ClusterRole
 metadata:
   name: worker-role
 rules:
-  - apiGroups: [ "batch","" ]
-    resources: [ "jobs","namespaces","pods","pods/log" ]
-    verbs: [ "get", "list", "watch", "create","delete","patch" ]
+  - apiGroups: ["batch", ""]
+    resources: ["jobs", "namespaces", "pods", "pods/log"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
 ---
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -264,9 +276,9 @@ metadata:
   name: worker-rolebinding
   namespace: dev
 subjects:
-- kind: ServiceAccount
-  name: worker
-  namespace: dev
+  - kind: ServiceAccount
+    name: worker
+    namespace: dev
 roleRef:
   kind: ClusterRole
   name: worker-role
@@ -292,7 +304,17 @@ spec:
       containers:
         - name: prefect-worker
           image: prefect_worker:1.0
-          command: [ "/opt/prefect/entrypoint.sh", "prefect", "worker","start", "--pool","worker-pool","--type","kubernetes" ]
+          command:
+            [
+              "/opt/prefect/entrypoint.sh",
+              "prefect",
+              "worker",
+              "start",
+              "--pool",
+              "worker-pool",
+              "--type",
+              "kubernetes",
+            ]
           imagePullPolicy: IfNotPresent
           env:
             - name: PREFECT_API_URL
@@ -300,5 +322,10 @@ spec:
           lifecycle:
             postStart:
               exec: # 在main container 啟動時 執行命令
-                command: ["/bin/sh", "-c", "sleep 15; prefect --no-prompt deploy --all"]
+                command:
+                  [
+                    "/bin/sh",
+                    "-c",
+                    "sleep 15; prefect --no-prompt deploy --all",
+                  ]
 ```
