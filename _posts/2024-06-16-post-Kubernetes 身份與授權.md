@@ -12,13 +12,43 @@ mermaid: true
 鑒權基本上分為身份驗證(authentication)與授權(authorization)
 
 ```mermaid
-graph LR
-    Pod -->|掛載| SA[ServiceAccount]
-    SA -->|subject| RB[RoleBinding]
-    RB -->|roleRef| CR[ClusterRole / Role]
-    CR -->|定義| Rules["rules\n- resources: pods\n- verbs: get, list"]
+flowchart TD
+    %% Style Settings (Professional & Clean)
+    classDef subject fill:#ECEFF1,stroke:#607D8B,stroke-width:2px,color:#263238
+    classDef clusterBinding fill:#E3F2FD,stroke:#2196F3,stroke-width:2px,color:#0D47A1
+    classDef nsBinding fill:#E8F5E9,stroke:#4CAF50,stroke-width:2px,color:#1B5E20
+    classDef role fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef scope fill:#FAFAFA,stroke:#9E9E9E,stroke-width:2px,stroke-dasharray: 5 5,color:#424242
 
-    RB -->|生效範圍| NS[Namespace]
+    %% Subject
+    Subj(["Subject<br>(User / Group / ServiceAccount)"]):::subject
+
+    %% Cluster Scope Subgraph
+    subgraph Sub_Cluster["Cluster Scope"]
+        CRB["ClusterRoleBinding"]:::clusterBinding
+        CR["ClusterRole"]:::role
+        CR_Res["Impact Scope: Entire Cluster<br>(Nodes, PVs, and all Namespaces)"]:::scope
+
+        CRB -->|"Binds to"| CR
+        CR -->|"Grants access to"| CR_Res
+    end
+
+    %% Namespace Scope Subgraph
+    subgraph Sub_Namespace["Namespace Scope"]
+        RB["RoleBinding"]:::nsBinding
+        R["Role"]:::role
+        NS_Res["Impact Scope: Single Namespace<br>(Pods, Deployments, SVCs, etc.)"]:::scope
+
+        RB -->|"Binds to"| R
+        R -->|"Grants access to"| NS_Res
+    end
+
+    %% Standard Relationships
+    Subj ==>|"Path A: Grant Cluster-wide Access"| CRB
+    Subj ==>|"Path B: Grant Namespace-level Access"| RB
+
+    %% Advanced/Cross-scope Binding (Dashed Line)
+    RB -.->|"Path C: Bind to ClusterRole<br>(Access is restricted to THIS Namespace only)"| CR
 ```
 
 - authentication:
