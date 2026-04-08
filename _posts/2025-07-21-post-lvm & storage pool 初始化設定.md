@@ -327,6 +327,9 @@ vgs
 #VSize: 這個卷組的總大小 (所有 PV 大小的總和)。
 #VFree: 這個卷組中還有多少可用空間可以讓你切出新的邏輯卷 (lvg)。
 
+vgdisplay
+# 可以查看該vgs還有多少空間
+
 pvs
 #  PV             VG        Fmt  Attr PSize    PFree
 #  /dev/nvme0n1p3 ubuntu-vg lvm2 a--  <950.82g <850.82g
@@ -373,9 +376,46 @@ lv = vgs 切一部分容量成 lv, 這邊可以直接格式化成filesystem moun
 - 檢視lvg
 
 ```bash
-lvs
+lvg
 #LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
 #ubuntu-lv ubuntu-vg -wi-ao---- 100.00g
+
+lvdisplay
+
+#  --- Logical volume ---
+#  LV Path                /dev/ubuntu-vg/ubuntu-lv
+#  LV Name                ubuntu-lv
+#  VG Name                ubuntu-vg
+#  LV UUID                0BF5rT-zdkk-zSB3-8MHr-8wve-NOo7-MuWjOs
+#  LV Write Access        read/write
+#  LV Creation host, time ubuntu-server, 2025-07-14 04:07:43 +0000
+#  LV Status              available
+#  # open                 1
+#  LV Size                100.00 GiB
+#  Current LE             25600
+#  Segments               1
+#  Allocation             inherit
+#  Read ahead sectors     auto
+#  - currently set to     256
+#  Block device           252:0
+#
+#  --- Logical volume ---
+#  LV Path                /dev/ubuntu-vg/sunny-bank
+#  LV Name                sunny-bank
+#  VG Name                ubuntu-vg
+#  LV UUID                D2Cqgk-TsvD-oTb6-3smV-Ye3x-LHoE-v94iXR
+#  LV Write Access        read/write
+#  LV Creation host, time anfu-vm-host, 2025-07-15 10:09:18 +0000
+#  LV Status              available
+#  # open                 1
+#  LV Size                100.00 GiB
+#  Current LE             25600
+#  Segments               1
+#  Allocation             inherit
+#  Read ahead sectors     auto
+#  - currently set to     256
+#  Block device           252:1
+
 ```
 
 - 創建lvg
@@ -390,7 +430,6 @@ lvcreate -n another_lv -L 200G anfu_vg
 
 lvcreate --name will_tainan --size 200G anfu_vg
 #  Logical volume "will_tainan" created.
-
 ```
 
 - 擴展lvg
@@ -400,56 +439,61 @@ lvcreate --name will_tainan --size 200G anfu_vg
 ```bash
 lvextend -L +8G /dev/anfu_vg/will_tainan
 # 假設我要擃展 will_tainan lvg的大小
+# 需先查詢 lvdisplay
+# host 機器執行
 ```
 
-lvg 切出固定大小後 就是要格式化, 之後用mount掛載成目錄, 就可以當作一般硬碟用
+Windows/Linux VM 空間延伸擴展
+
+lvextend後 需刷新空間大小
 
 ```bash
-sudo mkfs.ext4 /dev/ubuntu-vg/test_vm_storage
+virsh blockresize <VM名稱> /dev/anfu_vg/will_tainan <延伸後 最終磁碟大小>
+# 延伸後 refresh 磁碟大小
+# lvdisplay 查看vm 名稱 跟 路徑
+# host 中執行
 ```
 
-若正在掛載, 需更新掛載時設定的檔案系統大小
+Windows VM refresh空間
 
-路徑規則 `/dev/<vgs name>/<lvg name>`
+> > > 開啟磁碟管理 → 動作 → 重新整理（或 diskpart rescan）  
+> > > 右鍵 C: → 延伸磁碟區（或 diskpart extend）  
+> > > Windows 會自動處理檔案系統，不需額外操作
+
+Linux VM refresh空間
 
 ```bash
-resize2fs /dev/anfu_vg/will_tainan
+# 1. kernel 感知磁碟新大小
+echo 1 > /sys/class/block/vda/device/rescan
+
+# 2. 擴充分割區
+growpart /dev/vda 2
+
+# 3. 擴充檔案系統
+resize2fs /dev/vda2
+
+# 4. 確認
+df -h
 ```
 
-- after lvextend, refresh VM space
+Linux LVM VM refresh空間
 
-```bash
-# in vm machine
+少用 一般LVM都在坐在host, 只有多實體硬碟 小空間要湊一台新vm才會用到
 
-lsblk
-#NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-#sr0     11:0    1 1024M  0 rom
-#vda    253:0    0  256G  0 disk
-#├─vda1 253:1    0    1M  0 part
-#└─vda2 253:2    0  128G  0 part /
+```
+# 1. kernel 感知磁碟新大小
+echo 1 > /sys/class/block/vda/device/rescan
 
-sudo growpart /dev/vda 2
-# extend partition table
+# 2. LVM PV 感知
+pvresize /dev/vda3
+# lsblk 用這個可查看路徑
 
+# 3. LV + FS 擴充
+lvextend -l +100%FREE -r /dev/anfu_vg/avm
+# lvdisplay 可查看路徑
 
-lsblk
-#NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
-#sr0     11:0    1 1024M  0 rom
-#vda    253:0    0  256G  0 disk
-#├─vda1 253:1    0    1M  0 part
-#└─vda2 253:2    0  256G  0 part /
-
-df -lh
-#Filesystem      Size  Used Avail Use% Mounted on
-#/dev/vda2       128G   97G  31G  76% /
-
-sudo resize2fs /dev/vda2
-# extend to file sysyem
-
-df -lh
-#Filesystem      Size  Used Avail Use% Mounted on
-#/dev/vda2       252G   97G  144G  41% /
-
+# 4. 確認
+df -h
 ```
 
 - 刪除lvg
